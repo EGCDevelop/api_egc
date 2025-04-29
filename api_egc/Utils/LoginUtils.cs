@@ -54,7 +54,6 @@ namespace api_egc.Utils
             }
         }
 
-
         public static Member EXEC_SP_GET_MEMBER_BY_USERNAME(string connectionString, string username)
         {
             Member member = null;
@@ -86,6 +85,24 @@ namespace api_egc.Utils
             }
 
             return member!;
+        }
+
+        public static void EXEC_SP_UPDATE_TOKEN(string connectionString, string username, string token)
+        {
+            using (SqlConnection connection = new(connectionString))
+            {
+                connection.Open();
+
+                using (SqlCommand cmd = new("SP_UPDATE_TOKEN", connection))
+                {
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.Parameters.Add("@Username", SqlDbType.VarChar, 50).Value = username;
+                    cmd.Parameters.Add("@Token", SqlDbType.NVarChar, 1000).Value = token;
+
+                    // Ejecutar el procedimiento
+                    cmd.ExecuteNonQuery();
+                }
+            }
         }
 
 

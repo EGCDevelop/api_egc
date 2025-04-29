@@ -94,8 +94,8 @@ namespace api_egc.Controllers
                         new Claim("Role", member.INTPUIdPuesto.ToString())
 
                     }),
-                    //Expires = DateTime.UtcNow.AddHours(1), // Token expira en 1 hora
-                    Expires = DateTime.UtcNow.AddMinutes(1),
+                    Expires = DateTime.UtcNow.AddHours(1), // Token expira en 1 hora
+                    //Expires = DateTime.UtcNow.AddMinutes(1),
                     Issuer = _configuration["Jwt:Issuer"],
                     Audience = _configuration["Jwt:Audience"],
                     SigningCredentials = new SigningCredentials(
@@ -106,6 +106,8 @@ namespace api_egc.Controllers
 
                 var token = tokenHandler.CreateToken(tokenDescriptor);
 
+                // actualizamos el token en la DB 
+                LoginUtils.EXEC_SP_UPDATE_TOKEN(connectionString, username, tokenHandler.WriteToken(token));
 
                 return Ok(new
                 {
