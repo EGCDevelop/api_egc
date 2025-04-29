@@ -1,0 +1,6 @@
+@api_egc_HostAddress = http://localhost:5046
+
+GET {{api_egc_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

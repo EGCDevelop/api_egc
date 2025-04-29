@@ -1,0 +1,93 @@
+﻿using System.Data;
+using System.Data.SqlClient;
+using api_egc.Models;
+
+namespace api_egc.Utils
+{
+    public class LoginUtils
+    {
+
+        public static Versiones EXEC_SP_VERSION_APP(string connectionString)
+        {
+            Versiones version = null;
+            using (SqlConnection connection = new(connectionString))
+            {
+                connection.Open();
+
+                using SqlCommand cmd = new("SP_VERSION_APP", connection);
+                cmd.CommandType = CommandType.StoredProcedure;
+
+                using SqlDataReader reader = cmd.ExecuteReader();
+                if (reader.Read())
+                {
+                    version = new()
+                    {
+                        VERIdVersion = Utils.GetValue<long>(reader, "VERIdVersion"),
+                        VERNumero = Utils.GetValue<string>(reader, "VERNumero"),
+                        VERDescripcion = Utils.GetValue<string>(reader, "VERDescripcion"),
+                        VERObligatoria = Utils.GetValue<int>(reader, "VERObligatoria"),
+                    };
+                }
+            }
+
+            return version!;
+        }
+
+
+        public static void EXEC_SP_UPDATE_PASSWORD(string connectionString, string username, string password)
+        {
+
+            string hashedPassword  = PasswordHasher.HashPassword(password);
+            using (SqlConnection connection = new(connectionString))
+            {
+                connection.Open();
+
+                using (SqlCommand cmd = new("SP_UPDATE_PASSWORD", connection))
+                {
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.Parameters.Add("@Username", SqlDbType.VarChar, 50).Value = username;
+                    cmd.Parameters.Add("@Password", SqlDbType.NVarChar, 500).Value = hashedPassword;
+
+                    // Ejecutar el procedimiento
+                    cmd.ExecuteNonQuery();
+                }
+            }
+        }
+
+
+        public static Member EXEC_SP_GET_MEMBER_BY_USERNAME(string connectionString, string username)
+        {
+            Member member = null;
+
+            using (SqlConnection  connection = new(connectionString))
+            {
+                connection.Open();
+
+                using (SqlCommand cmd = new("SP_GET_MEMBER_BY_USERNAME", connection))
+                {
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.Parameters.Add("@Username", SqlDbType.VarChar, 50).Value = username;
+
+                    using SqlDataReader reader = cmd.ExecuteReader();
+
+                    if (reader.Read())
+                    {
+                        member = new()
+                        {
+                            INTIdIntegrante = Utils.GetValue<long>(reader, "INTIdIntegrante"),
+                            INTNombres = Utils.GetValue<string>(reader, "INTNombres"),
+                            INTApellidos = Utils.GetValue<string>(reader, "INTApellidos"),
+                            INTESCIdEscuadra = Utils.GetValue<long>(reader, "INTESCIdEscuadra"),
+                            INTPUIdPuesto = Utils.GetValue<long>(reader, "INTPUIdPuesto"),
+                            INTPassword = Utils.GetValue<string>(reader, "INTPassword")
+                        };
+                    }
+                }
+            }
+
+            return member!;
+        }
+
+
+    }
+}

@@ -1,0 +1,16 @@
+# Ignorar carpetas de compilación
+bin/
+obj/
+
+# Ignorar configuraciones de Visual Studio
+.vs/
+
+# Ignorar dependencias locales
+packages/
+
+# Ignorar archivos específicos del sistema
+*.log
+*.tmp
+*.suo
+*.user
+.DS_Store
