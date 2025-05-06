@@ -1,6 +1,7 @@
 ﻿using System.Data;
 using System.Data.SqlClient;
 using api_egc.Models;
+using Newtonsoft.Json.Linq;
 
 namespace api_egc.Utils
 {
@@ -98,6 +99,26 @@ namespace api_egc.Utils
                     cmd.CommandType = CommandType.StoredProcedure;
                     cmd.Parameters.Add("@Username", SqlDbType.VarChar, 50).Value = username;
                     cmd.Parameters.Add("@Token", SqlDbType.NVarChar, 1000).Value = token;
+
+                    // Ejecutar el procedimiento
+                    cmd.ExecuteNonQuery();
+                }
+            }
+        }
+
+        public static void EXEC_SP_INSERT_BITACORA(string connectionString, long id)
+        {
+            DateTime date = DateTime.Now;
+
+            using (SqlConnection connection = new(connectionString))
+            {
+                connection.Open();
+
+                using (SqlCommand cmd = new("SP_INSERT_BITACORA", connection))
+                {
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.Parameters.Add("@IdIntegrante", SqlDbType.BigInt).Value = id;
+                    cmd.Parameters.Add("@Fecha", SqlDbType.DateTime).Value = date;
 
                     // Ejecutar el procedimiento
                     cmd.ExecuteNonQuery();

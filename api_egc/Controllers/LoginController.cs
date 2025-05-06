@@ -109,6 +109,10 @@ namespace api_egc.Controllers
                 // actualizamos el token en la DB 
                 LoginUtils.EXEC_SP_UPDATE_TOKEN(connectionString, username, tokenHandler.WriteToken(token));
 
+                // registramos en bitacora
+                LoginUtils.EXEC_SP_INSERT_BITACORA(connectionString, member.INTIdIntegrante);
+
+
                 return Ok(new
                 {
                     ok = true,

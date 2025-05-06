@@ -1,0 +1,110 @@
+﻿using System.Text.Json.Nodes;
+using api_egc.Models;
+using api_egc.Utils;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+
+namespace api_egc.Controllers
+{
+    [ApiController]
+    [Route("[controller]")]
+    public class AsistenciaController(ILogger<AsistenciaController> logger, IConfiguration configuration) : Controller
+    {
+        private readonly IConfiguration _configuration = configuration;
+        private readonly ILogger<AsistenciaController> _logger = logger;
+
+
+        [HttpGet]
+        [Route("get_ping")]
+        public IActionResult GetPing()
+        {
+            return Ok(new
+            {
+                ok = true,
+                message = "GetPing ... LoginController"
+            });
+        }
+
+
+        [HttpPost]
+        [Authorize]
+        [Route("register_attendance")]
+        public IActionResult RegisterAttendance([FromBody] JsonObject json)
+        {
+            try
+            {
+                string connectionString = _configuration.GetConnectionString("DbEgcConnection")!;
+                long idIntegrante = long.Parse(json["id"]!.ToString());
+                long escuadraComandante = long.Parse(json["escuadra"]!.ToString());
+                long puestoComandante = long.Parse(json["puesto"]!.ToString());
+                HashSet<long> generales = [1, 2, 3, 4];
+
+
+                bool asistencia = AsistenciaUtils.EXEC_SP_GET_ASISTENCIA_BY_INTEGRANTE(connectionString, idIntegrante);
+
+                _logger.LogInformation($"asistencia == {asistencia}");
+
+                if(asistencia)
+                {
+                    return Ok(new
+                    {
+                        ok = true,
+                        message = "Asistencia registrada exitosamente"
+                    });
+                }
+
+                if (!generales.Contains(puestoComandante))
+                {
+                    // Si no es un general procedemos a validar que el comandante y el integrante sean de la misma escuadra
+                    _logger.LogInformation("no es un general, validamos que sea de la misma escuadra");
+                    IntegranteDto integrante = AsistenciaUtils.EXEC_SP_GET_INTEGRANTE_BY_ID(connectionString, idIntegrante);
+
+                    if(escuadraComandante != integrante.INTESCIdEscuadra)
+                    {
+                        return BadRequest(new
+                        {
+                            ok = false,
+                            message = "El integrante no es de la misma escuadra"
+                        });
+                    }
+                }
+
+                AsistenciaUtils.EXEC_SP_INSERT_ASISTENCIA(connectionString, idIntegrante);
+
+                return Ok(new
+                {
+                    ok = true,
+                    message = "Asistencia registrada exitosamente"
+                });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(200, new { message = $"Error al hacer login {ex}" });
+            }
+        }
+
+
+        [HttpGet]
+        [Route("get_asistencia")]
+        public IActionResult GetAsistencia([FromQuery] long idEscuadra, [FromQuery] DateTime date)
+        {
+            try
+            {
+                string connectionString = _configuration.GetConnectionString("DbEgcConnection")!;
+                List<AsistenciaDto> list = AsistenciaUtils.EXEC_SP_GET_ASISTENCIA(connectionString, idEscuadra, date);
+
+                return Ok(new
+                {
+                    ok = true,
+                    list
+                });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(200, new { message = $"Error al hacer login {ex}" });
+            }
+        }
+
+
+    }
+}
