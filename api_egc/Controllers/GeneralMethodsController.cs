@@ -48,5 +48,36 @@ namespace api_egc.Controllers
                 return StatusCode(500, new { ok = false,  message = $"Error {ex}" });
             }
         }
+
+        [HttpPost]
+        [Route("insert_member_per_year")]
+        public IActionResult InsertMemberPerYear()
+        {
+            try
+            {
+                string connectionString = _configuration.GetConnectionString("DbEgcConnection")!;
+                List<IntegrantePerYearDto>  list = GeneralMethodsUtils.EXEC_SP_GET_BY_INSERT_PER_YEAR(connectionString);
+
+                foreach(IntegrantePerYearDto dto in list)
+                {
+                    GeneralMethodsUtils.EXEC_SP_INSERT_MEMEBER_PER_YEAR(connectionString, dto.INTIdIntegrante,
+                        dto.INTESCIdEscuadra, dto.INTPUIdPuesto);
+                }
+
+                return Ok(new
+                {
+                    ok = true,
+                    message = "Integrantes por año insertados correctamente"
+                });
+            }
+            catch (SqlException ex)
+            {
+                return StatusCode(500, new { ok = false, message = $"Error SQL {ex}" });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { ok = false, message = $"Error {ex}" });
+            }
+        }
     }
 }

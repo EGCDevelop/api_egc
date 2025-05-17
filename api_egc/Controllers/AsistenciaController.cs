@@ -37,6 +37,8 @@ namespace api_egc.Controllers
                 long idIntegrante = long.Parse(json["id"]!.ToString());
                 long escuadraComandante = long.Parse(json["escuadra"]!.ToString());
                 long puestoComandante = long.Parse(json["puesto"]!.ToString());
+                long eventId = long.Parse(json["eventId"]!.ToString());
+                long idRegistro = long.Parse(json["idRegistro"]!.ToString());
                 HashSet<long> generales = [1, 2, 3, 4];
 
 
@@ -69,7 +71,7 @@ namespace api_egc.Controllers
                     }
                 }
 
-                AsistenciaUtils.EXEC_SP_INSERT_ASISTENCIA(connectionString, idIntegrante);
+                AsistenciaUtils.EXEC_SP_INSERT_ASISTENCIA(connectionString, idIntegrante, eventId, idRegistro);
 
                 return Ok(new
                 {
@@ -86,12 +88,31 @@ namespace api_egc.Controllers
 
         [HttpGet]
         [Route("get_asistencia")]
-        public IActionResult GetAsistencia([FromQuery] long idEscuadra, [FromQuery] DateTime date)
+        public IActionResult GetAsistencia([FromQuery] long idEscuadra, [FromQuery] DateTime date, [FromQuery] long eventId)
         {
             try
             {
                 string connectionString = _configuration.GetConnectionString("DbEgcConnection")!;
-                List<AsistenciaDto> list = AsistenciaUtils.EXEC_SP_GET_ASISTENCIA(connectionString, idEscuadra, date);
+                List<AsistenciaDto> list = [];
+
+                _logger.LogInformation($"idEscuadra == {idEscuadra}");
+                _logger.LogInformation($"date == {date}");
+                _logger.LogInformation($"eventId == {eventId}");
+
+                bool exist = AsistenciaUtils.EXEC_SP_VALIDATE_EVENT_EXIST(connectionString, idEscuadra, eventId);
+
+                _logger.LogInformation($"exist == {exist}");
+
+                if (!exist)
+                {
+                    return Ok(new
+                    {
+                        ok = true,
+                        list
+                    });
+                }
+
+                list = AsistenciaUtils.EXEC_SP_GET_ASISTENCIA(connectionString, idEscuadra, date, eventId);
 
                 return Ok(new
                 {

@@ -121,7 +121,8 @@ namespace api_egc.Controllers
                     member.INTApellidos,
                     member.INTESCIdEscuadra,
                     member.INTPUIdPuesto,
-                    token = tokenHandler.WriteToken(token)
+                    token = tokenHandler.WriteToken(token),
+                    username
                 });
             } 
             catch (Exception ex)

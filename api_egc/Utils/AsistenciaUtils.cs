@@ -53,7 +53,7 @@ namespace api_egc.Utils
         }
 
 
-        public static void EXEC_SP_INSERT_ASISTENCIA(string connectionString, long id)
+        public static void EXEC_SP_INSERT_ASISTENCIA(string connectionString, long id, long eventId, long idRegister)
         {
             DateTime date = DateTime.Now;
 
@@ -66,6 +66,9 @@ namespace api_egc.Utils
                     cmd.CommandType = CommandType.StoredProcedure;
                     cmd.Parameters.Add("@IdIntegrante", SqlDbType.BigInt).Value = id;
                     cmd.Parameters.Add("@Fecha", SqlDbType.DateTime).Value = date;
+                    cmd.Parameters.Add("@EventId", SqlDbType.BigInt).Value = eventId;
+                    cmd.Parameters.Add("@IdRegistro", SqlDbType.BigInt).Value = idRegister;
+                    cmd.Parameters.Add("@Extraordinaria", SqlDbType.Bit).Value = 0;
 
                     // Ejecutar el procedimiento
                     cmd.ExecuteNonQuery();
@@ -92,7 +95,7 @@ namespace api_egc.Utils
         }
 
 
-        public static List<AsistenciaDto> EXEC_SP_GET_ASISTENCIA(string connectionString, long IdEscruadra, DateTime date)
+        public static List<AsistenciaDto> EXEC_SP_GET_ASISTENCIA(string connectionString, long IdEscruadra, DateTime date, long EventId)
         {
             List<AsistenciaDto> list = [];
 
@@ -105,6 +108,7 @@ namespace api_egc.Utils
                     cmd.CommandType = CommandType.StoredProcedure;
                     cmd.Parameters.Add("@IdEscruadra", SqlDbType.BigInt).Value = IdEscruadra;
                     cmd.Parameters.Add("@Date", SqlDbType.Date).Value = date;
+                        cmd.Parameters.Add("@EventId", SqlDbType.BigInt).Value = EventId;
 
                     using SqlDataReader reader = cmd.ExecuteReader();
 
@@ -117,7 +121,12 @@ namespace api_egc.Utils
                             INTApellidos = Utils.GetValue<string>(reader, "INTApellidos"),
                             ASIIdAsistencia = Utils.GetValueNull<long?>(reader, "ASIIdAsistencia"),
                             ASIFechaAsistencia = Utils.GetValueNull<DateTime?>(reader, "ASIFechaAsistencia"),
-                            Asistencia = Utils.GetValue<int>(reader, "Asistencia")
+                            Asistencia = Utils.GetValue<int>(reader, "Asistencia"),
+                            ASIEVEId = Utils.GetValue<long>(reader, "ASIEVEId"),
+                            ASIINTIdIntegranteRegistro = Utils.GetValue<long>(reader, "ASIINTIdIntegranteRegistro"),
+                            ASIEsExtraordinaria = Utils.GetValue<int>(reader, "ASIEsExtraordinaria"),
+                            ASIComentario = Utils.GetValueNull<string>(reader, "ASIComentario"),
+                            ASIFechaRegistroExtraordinaria = Utils.GetValueNull<DateTime?>(reader, "ASIFechaRegistroExtraordinaria"),
                         };
 
                         list.Add(asistencia);
@@ -126,6 +135,23 @@ namespace api_egc.Utils
                 }
             }
             return list;
+        }
+
+        public static bool EXEC_SP_VALIDATE_EVENT_EXIST(string connectionString, long squadId, long eventId)
+        {
+            using SqlConnection connection = new(connectionString);
+            connection.Open();
+
+            using SqlCommand cmd = new("SP_VALIDATE_EVENT_EXIST", connection);
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.Parameters.Add("@SquadId", SqlDbType.BigInt).Value = squadId;
+            cmd.Parameters.Add("@EventId", SqlDbType.BigInt).Value = eventId;
+
+            // Ejecutamos el procedimiento almacenado y obtenemos el resultado
+            object result = cmd.ExecuteScalar();
+
+            // Si `result` es 1, el evento existe; si es 0, no existe
+            return result != null && Convert.ToInt32(result) == 1;
         }
     }
 }

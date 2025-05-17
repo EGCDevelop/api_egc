@@ -12,7 +12,19 @@
         
         public DateTime? ASIFechaAsistencia { get; set; }
         
-        public int Asistencia { get; set; }
+        public required int Asistencia { get; set; }
+
+        public required long ASIEVEId { get; set; }
+
+        public required long ASIINTIdIntegranteRegistro { get; set; }
+
+        public required int ASIEsExtraordinaria { get; set; }
+
+        public string? ASIComentario { get; set; }
+
+        public DateTime? ASIFechaRegistroExtraordinaria { get; set; }
+
+
 
     }
 }
