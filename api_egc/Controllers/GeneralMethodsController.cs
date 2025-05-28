@@ -49,6 +49,110 @@ namespace api_egc.Controllers
             }
         }
 
+
+        [HttpGet]
+        [Route("get_establishment")]
+        public IActionResult GetEstablishment()
+        {
+            try
+            {
+                string connectionString = _configuration.GetConnectionString("DbEgcConnection")!;
+                List<Establishment> list = GeneralMethodsUtils.EXEC_SP_GET_ESTABLECIMIENTO(connectionString);
+
+                return Ok(new
+                {
+                    ok = true,
+                    list
+                });
+            }
+            catch (SqlException ex)
+            {
+                return StatusCode(500, new { ok = false, message = $"Error SQL {ex}" });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { ok = false, message = $"Error {ex}" });
+            }
+        }
+
+        [HttpGet]
+        [Route("get_degrees")]
+        public IActionResult GetDegrees()
+        {
+            try
+            {
+                string connectionString = _configuration.GetConnectionString("DbEgcConnection")!;
+                List<Grado> list = GeneralMethodsUtils.EXEC_SP_GET_GRADO(connectionString);
+
+                return Ok(new
+                {
+                    ok = true,
+                    list
+                });
+            }
+            catch (SqlException ex)
+            {
+                return StatusCode(500, new { ok = false, message = $"Error SQL {ex}" });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { ok = false, message = $"Error {ex}" });
+            }
+        }
+
+        [HttpGet]
+        [Route("get_career")]
+        public IActionResult GetCareer()
+        {
+            try
+            {
+                string connectionString = _configuration.GetConnectionString("DbEgcConnection")!;
+                List<Carrera> list = GeneralMethodsUtils.EXEC_SP_GET_CARRERA(connectionString);
+
+                return Ok(new
+                {
+                    ok = true,
+                    list
+                });
+            }
+            catch (SqlException ex)
+            {
+                return StatusCode(500, new { ok = false, message = $"Error SQL {ex}" });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { ok = false, message = $"Error {ex}" });
+            }
+        }
+
+
+        [HttpGet]
+        [Route("get_position")]
+        public IActionResult GetPosition()
+        {
+            try
+            {
+                string connectionString = _configuration.GetConnectionString("DbEgcConnection")!;
+                List<Position> list = GeneralMethodsUtils.EXEC_SP_GET_POSITION(connectionString);
+
+                return Ok(new
+                {
+                    ok = true,
+                    list
+                });
+            }
+            catch (SqlException ex)
+            {
+                return StatusCode(500, new { ok = false, message = $"Error SQL {ex}" });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { ok = false, message = $"Error {ex}" });
+            }
+        }
+
+
+
         [HttpPost]
         [Route("insert_member_per_year")]
         public IActionResult InsertMemberPerYear()

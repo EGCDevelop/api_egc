@@ -1,7 +1,6 @@
 ﻿using System.Data;
 using System.Data.SqlClient;
 using api_egc.Models;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace api_egc.Utils
 {
@@ -108,7 +107,7 @@ namespace api_egc.Utils
                     cmd.CommandType = CommandType.StoredProcedure;
                     cmd.Parameters.Add("@IdEscruadra", SqlDbType.BigInt).Value = IdEscruadra;
                     cmd.Parameters.Add("@Date", SqlDbType.Date).Value = date;
-                        cmd.Parameters.Add("@EventId", SqlDbType.BigInt).Value = EventId;
+                    cmd.Parameters.Add("@EventId", SqlDbType.BigInt).Value = EventId;
 
                     using SqlDataReader reader = cmd.ExecuteReader();
 
