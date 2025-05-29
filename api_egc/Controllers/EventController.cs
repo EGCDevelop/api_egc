@@ -203,6 +203,30 @@ namespace api_egc.Controllers
             }
         }
 
+        [HttpGet]
+        [Route("get_squad_by_event_id")]
+        public IActionResult GetSquadByEventId([FromQuery] long id)
+        {
+            try
+            {
+                string connectionString = _configuration.GetConnectionString("DbEgcConnection")!;
+                List<Escuadras> list = EventUtils.EXEC_SP_GET_ESCUADRAS_BY_EVENT(connectionString, id);
+                return Ok(new
+                {
+                    ok = true,
+                    list
+                });
+            }
+            catch (SqlException sqlEx)
+            {
+                return StatusCode(200, new { message = $"Error base de datos {sqlEx}" });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(200, new { message = $"Error de servidor {ex}" });
+            }
+        }
+
 
     }
 }
