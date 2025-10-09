@@ -25,5 +25,7 @@
         public DateTime? EVEFechaModificacon { get; set; }
 
         public required int EVEBandaGeneral { get; set; }
-}
+
+        public required int EVEIdEstado { get; set; }
+    }
 }

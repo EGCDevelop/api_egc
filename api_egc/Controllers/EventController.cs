@@ -1,8 +1,9 @@
-﻿using System.Data.SqlClient;
-using System.Text.Json.Nodes;
-using api_egc.Models;
+﻿using api_egc.Models;
 using api_egc.Utils;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
+using System.Data.SqlClient;
+using System.Text.Json.Nodes;
 
 namespace api_egc.Controllers
 {
@@ -63,9 +64,8 @@ namespace api_egc.Controllers
                 bool onlyCommanders = json["onlyCommanders"]?.ToString() == "1";
                 bool genenalBand = json["generalBand"]?.ToString() == "1";
 
-
                 int id = EventUtils.EXEC_SP_INSERTAREVENTO(connectionString, title, description, eventDate, commandersTimeSpan, onlyCommanders,
-                    membersTimeSpan, userCreate, genenalBand);
+                    membersTimeSpan, userCreate, genenalBand, 1);
 
                 JsonArray squads = json["squads"]!.AsArray();
                 List<long> ids = squads.Select(n => long.Parse(n.ToString())).ToList();
@@ -103,7 +103,7 @@ namespace api_egc.Controllers
                 DateTime fechaFin = fechaInicio.AddMonths(1).AddDays(-1);
 
                 string connectionString = _configuration.GetConnectionString("DbEgcConnection")!;
-                List<Event> list = EventUtils.EXEC_SP_GET_EVENTS_BY_ID_SQUAD(connectionString, idEscuadra, fechaInicio, fechaFin);
+                List<Event> list = EventUtils.EXEC_SP_GET_EVENTS_BY_ID_SQUAD(connectionString, idEscuadra, fechaInicio, fechaFin, 1);
 
                 return Ok(new
                 {
@@ -129,7 +129,7 @@ namespace api_egc.Controllers
             {
                 string connectionString = _configuration.GetConnectionString("DbEgcConnection")!;
                 
-                EventUtils.EXEC_SP_DELETE_DETALLE_EVENTO(connectionString, idEvent);
+                //EventUtils.EXEC_SP_DELETE_DETALLE_EVENTO(connectionString, idEvent);
                 EventUtils.EXEC_SP_DELETE_EVENTO(connectionString, idEvent);
 
                 return Ok(new
@@ -158,8 +158,12 @@ namespace api_egc.Controllers
                 DateTime fechaInicio = DateTime.Now.Date;
                 DateTime fechaFin = DateTime.Now.Date;
 
+                _logger.LogInformation($"fechaInicio == {fechaInicio}");
+                _logger.LogInformation($"fechaFin == {fechaFin}");
+                _logger.LogInformation($"idEscuadra == {idEscuadra}");
+
                 string connectionString = _configuration.GetConnectionString("DbEgcConnection")!;
-                List<Event> list = EventUtils.EXEC_SP_GET_EVENTS_BY_ID_SQUAD(connectionString, idEscuadra, fechaInicio, fechaFin);
+                List<Event> list = EventUtils.EXEC_SP_GET_EVENTS_BY_ID_SQUAD(connectionString, idEscuadra, fechaInicio, fechaFin, 1);
 
                 return Ok(new
                 {
@@ -185,7 +189,7 @@ namespace api_egc.Controllers
             {
 
                 string connectionString = _configuration.GetConnectionString("DbEgcConnection")!;
-                List<Event> list = EventUtils.EXEC_SP_GET_EVENTS_BY_ID_SQUAD(connectionString, idEscuadra, date.Date, date.Date);
+                List<Event> list = EventUtils.EXEC_SP_GET_EVENTS_BY_ID_SQUAD(connectionString, idEscuadra, date.Date, date.Date, 1);
 
                 return Ok(new
                 {

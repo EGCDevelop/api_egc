@@ -7,7 +7,8 @@ namespace api_egc.Utils
     public class EventUtils
     {
         public static int EXEC_SP_INSERTAREVENTO(string connectionString, string title, string description, DateTime eventDate,
-            TimeSpan commandersEntry, bool onlyCommanders, TimeSpan membersEntry, string userCreate, bool generalBand)
+            TimeSpan commandersEntry, bool onlyCommanders, TimeSpan membersEntry, string userCreate, bool generalBand,
+            int idEstado)
         {
             using SqlConnection conn = new(connectionString);
             using SqlCommand cmd = new("sp_InsertarEvento", conn);
@@ -24,6 +25,7 @@ namespace api_egc.Utils
             cmd.Parameters.AddWithValue("@EVEUsuarioCreacion", userCreate);
             cmd.Parameters.AddWithValue("@EVEFechaCreacion", DateTime.Now); // Fecha de creación automática
             cmd.Parameters.AddWithValue("@EVEBandaGeneral", generalBand ? 1 : 0);
+            cmd.Parameters.AddWithValue("@EVEIdEstado", idEstado);
 
             // parametro de salida
             SqlParameter outputParam = new("@InsertedId", SqlDbType.Int)
@@ -58,7 +60,7 @@ namespace api_egc.Utils
         }
 
         public static List<Event> EXEC_SP_GET_EVENTS_BY_ID_SQUAD(string connectionString, long idSquad, DateTime fechaInicio,
-            DateTime fechaFin )
+            DateTime fechaFin, int idEstado )
         {
             List<Event> list = [];
 
@@ -72,6 +74,7 @@ namespace api_egc.Utils
                     cmd.Parameters.Add("@EscuadraId", SqlDbType.BigInt).Value = idSquad;
                     cmd.Parameters.Add("@FechaInicio", SqlDbType.DateTime).Value = fechaInicio;
                     cmd.Parameters.Add("@FechaFin", SqlDbType.DateTime).Value = fechaFin;
+                    cmd.Parameters.Add("@IdEstado", SqlDbType.Int).Value = idEstado;
 
 
 
@@ -93,6 +96,7 @@ namespace api_egc.Utils
                             EVEUsuarioModificacion = Utils.GetValueNull<string>(reader, "EVEUsuarioModificacion"),
                             EVEFechaModificacon = Utils.GetValueNull<DateTime>(reader, "EVEFechaModificacon"),
                             EVEBandaGeneral = Utils.GetValue<int>(reader, "EVEBandaGeneral"),
+                            EVEIdEstado = Utils.GetValue<int>(reader, "EVEIdEstado")
                         };
                         list.Add(e);
                     }
