@@ -1,5 +1,6 @@
 ﻿using System.Data.SqlClient;
 using api_egc.Models;
+using api_egc.Models.Instructors;
 using api_egc.Utils;
 using Microsoft.AspNetCore.Mvc;
 
@@ -172,6 +173,31 @@ namespace api_egc.Controllers
                 {
                     ok = true,
                     message = "Integrantes por año insertados correctamente"
+                });
+            }
+            catch (SqlException ex)
+            {
+                return StatusCode(500, new { ok = false, message = $"Error SQL {ex}" });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { ok = false, message = $"Error {ex}" });
+            }
+        }
+
+        [HttpGet]
+        [Route("get_instructor_positions")]
+        public IActionResult GetInstructorPositions()
+        {
+            try
+            {
+                string connectionString = _configuration.GetConnectionString("DbEgcConnection")!;
+                List<InstructorPositions> list = GeneralMethodsUtils.EXEC_SP_GET_INSTRUCTOR_POSITIONS(connectionString);
+
+                return Ok(new
+                {
+                    ok = true,
+                    list
                 });
             }
             catch (SqlException ex)

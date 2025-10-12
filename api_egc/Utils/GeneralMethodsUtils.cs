@@ -1,6 +1,7 @@
 ﻿using System.Data;
 using System.Data.SqlClient;
 using api_egc.Models;
+using api_egc.Models.Instructors;
 
 namespace api_egc.Utils
 {
@@ -192,6 +193,34 @@ namespace api_egc.Utils
 
             // Ejecutar el procedimiento
             cmd.ExecuteNonQuery();
+        }
+
+        public static List<InstructorPositions> EXEC_SP_GET_INSTRUCTOR_POSITIONS(string connectionString)
+        {
+            List<InstructorPositions> list = [];
+
+            using (SqlConnection connection = new(connectionString))
+            {
+                connection.Open();
+
+                using SqlCommand cmd = new("SP_GET_INSTRUCTOR_POSITIONS", connection);
+                cmd.CommandType = CommandType.StoredProcedure;
+
+                using SqlDataReader reader = cmd.ExecuteReader();
+
+                while (reader.Read())
+                {
+                    InstructorPositions positions = new()
+                    {
+                        Id = Utils.GetValue<int>(reader, "Id"),
+                        Descripcion = Utils.GetValue<string>(reader, "Descripcion")
+                    };
+
+                    list.Add(positions);
+                }
+            }
+
+            return list;
         }
     }
 }

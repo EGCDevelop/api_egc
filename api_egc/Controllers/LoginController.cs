@@ -164,6 +164,7 @@ namespace api_egc.Controllers
                             telefono = instructor.INSTelefono,
                             correo = instructor.INSCorreo,
                             idPuesto = instructor.INTPIId,
+                            area = instructor.INSArea,
                             token = tokenHandler.WriteToken(token),
                             username
                         });

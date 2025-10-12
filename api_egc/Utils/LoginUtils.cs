@@ -134,7 +134,8 @@ namespace api_egc.Utils
                             INSTelefono = Utils.GetValueNull<string>(reader, "INSTelefono"),
                             INSCorreo = Utils.GetValueNull<string>(reader, "INSCorreo"),
                             INSPassword = Utils.GetValue<string>(reader, "INSPassword"),
-                            INTPIId = Utils.GetValue<int>(reader, "INTPIId")
+                            INTPIId = Utils.GetValue<int>(reader, "INTPIId"),
+                            INSArea = Utils.GetValue<string>(reader, "INSArea")
                         };
                     }
                 }

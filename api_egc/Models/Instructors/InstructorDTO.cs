@@ -15,5 +15,7 @@
 		public required string INSPassword { get; set; }
 
         public required int INTPIId { get; set; }
+
+		public required string INSArea { get; set; }
     }
 }
