@@ -230,8 +230,7 @@ namespace api_egc.Controllers
 
                 return Ok(new
                 {
-                    ok = true,
-                    message = "contraseña actualizada correctamente"
+                    ok = true
                 });
 
             }

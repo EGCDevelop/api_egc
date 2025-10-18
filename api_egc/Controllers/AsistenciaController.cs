@@ -95,10 +95,6 @@ namespace api_egc.Controllers
                 string connectionString = _configuration.GetConnectionString("DbEgcConnection")!;
                 List<AsistenciaDto> list = [];
 
-                _logger.LogInformation($"idEscuadra == {idEscuadra}");
-                _logger.LogInformation($"date == {date}");
-                _logger.LogInformation($"eventId == {eventId}");
-
                 bool exist = AsistenciaUtils.EXEC_SP_VALIDATE_EVENT_EXIST(connectionString, idEscuadra, eventId);
 
                 _logger.LogInformation($"exist == {exist}");

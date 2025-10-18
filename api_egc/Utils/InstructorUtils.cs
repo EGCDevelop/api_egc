@@ -1,8 +1,6 @@
-﻿using api_egc.Models;
-using api_egc.Models.Instructors;
+﻿using api_egc.Models.Instructors;
 using System.Data;
 using System.Data.SqlClient;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace api_egc.Utils
 {
@@ -16,30 +14,45 @@ namespace api_egc.Utils
             {
                 connection.Open();
 
-                using (SqlCommand cmd = new("SP_GET_ASSIGNED_SQUADS_INSTRUCTORS", connection))
+                using SqlCommand cmd = new("SP_GET_ASSIGNED_SQUADS_INSTRUCTORS", connection);
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Add("@IdInstructor", SqlDbType.BigInt).Value = idInstructor;
+
+                using SqlDataReader reader = cmd.ExecuteReader();
+
+                while (reader.Read())
                 {
-                    cmd.CommandType = CommandType.StoredProcedure;
-                    cmd.Parameters.Add("@IdInstructor", SqlDbType.BigInt).Value = idInstructor;
-                    
-                    using SqlDataReader reader = cmd.ExecuteReader();
-
-                    while (reader.Read())
+                    EscuadrasInstructoresDTO data = new()
                     {
-                        EscuadrasInstructoresDTO data = new()
-                        {
-                            Id = Utils.GetValue<int>(reader, "Id"),
-                            IdEscuadra = Utils.GetValue<int>(reader, "IdEscuadra"),
-                            IdInstructor = Utils.GetValue<long>(reader, "IdInstructor"),
-                            Principal = Utils.GetValue<int>(reader, "Principal"),
-                            Nombre = Utils.GetValue<string>(reader, "Nombre")
-                        };
+                        Id = Utils.GetValue<int>(reader, "Id"),
+                        IdEscuadra = Utils.GetValue<int>(reader, "IdEscuadra"),
+                        IdInstructor = Utils.GetValue<long>(reader, "IdInstructor"),
+                        Principal = Utils.GetValue<int>(reader, "Principal"),
+                        Nombre = Utils.GetValue<string>(reader, "Nombre")
+                    };
 
-                        list.Add(data);
-                    }
-
+                    list.Add(data);
                 }
             }
             return list;
+        }
+
+        public static void EXEC_SP_UPDATE_INSTRUCTOR_PROFILE(string connectionString, long id, string name, string lastName,
+            string phone, string email)
+        {
+            using SqlConnection connection = new(connectionString);
+            connection.Open();
+
+            using SqlCommand cmd = new("SP_UPDATE_INSTRUCTOR_PROFILE", connection);
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.Parameters.Add("@id", SqlDbType.BigInt).Value = id;
+            cmd.Parameters.Add("@name", SqlDbType.NVarChar).Value = name;
+            cmd.Parameters.Add("@lastName", SqlDbType.NVarChar).Value = lastName;
+            cmd.Parameters.Add("@phone", SqlDbType.VarChar, 8).Value = phone;
+            cmd.Parameters.Add("@email", SqlDbType.NVarChar).Value = email;
+
+            // Ejecutar el procedimiento
+            cmd.ExecuteNonQuery();
         }
     }
 }

@@ -52,6 +52,32 @@ namespace api_egc.Controllers
             }
         }
 
+        [HttpGet]
+        [Route("get_member_for_instructor")]
+        public IActionResult GetMemberForInstructor([FromQuery] string? like, [FromQuery] long? squadId, [FromQuery] long? schoolId,
+            [FromQuery] int? isNew, [FromQuery] int? memberState, [FromQuery] int? career)
+        {
+            try
+            {
+                string connectionString = _configuration.GetConnectionString("DbEgcConnection")!;
+                int year = DateTime.Now.Year;
+
+                string search = string.IsNullOrWhiteSpace(like) ? "%" : like.ToLower();
+
+                List<MemberDTO> list = MemberUtils.EXEC_SP_GET_INTEGRANTE_FOR_INSTRUCTOR(connectionString, year, search, squadId, schoolId, isNew, memberState, career);
+
+                return Ok(new
+                {
+                    ok = true,
+                    list
+                });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(200, new { message = $"Error al hacer login {ex}" });
+            }
+        }
+
         [HttpPut]
         [Route("update_member")]
         public IActionResult UpdateMember([FromBody] JsonObject json)

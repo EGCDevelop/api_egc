@@ -2,6 +2,7 @@
 using api_egc.Utils;
 using Microsoft.AspNetCore.Mvc;
 using System.Data.SqlClient;
+using System.Text.Json.Nodes;
 
 namespace api_egc.Controllers
 {
@@ -36,6 +37,41 @@ namespace api_egc.Controllers
                 return Ok(new
                 {
                     data
+                });
+            }
+            catch (SqlException ex)
+            {
+                return StatusCode(500, new { ok = false, message = $"Error SQL {ex}" });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { ok = false, message = $"Error {ex}" });
+            }
+        }
+
+        [HttpPut]
+        [Route("update_instructor_profile")]
+        public IActionResult UpdateInstructorProfile([FromBody] JsonObject json)
+        {
+            try
+            {
+                string connectionString = _configuration.GetConnectionString("DbEgcConnection")!;
+                long id = long.Parse(json["id"]!.ToString());
+                string name = json["name"]!.ToString();
+                string lasrName = json["lastName"]!.ToString();
+                string phone = json["phone"]!.ToString();
+                string email = json["email"]!.ToString();
+
+                InstructorUtils.EXEC_SP_UPDATE_INSTRUCTOR_PROFILE(connectionString, id, name, lasrName, phone, email);
+
+                return Ok(new
+                {
+                    ok = true,
+                    id,
+                    nombre = name,
+                    apellido = lasrName,
+                    telefono = phone,
+                    correo = email
                 });
             }
             catch (SqlException ex)
