@@ -125,5 +125,64 @@ namespace api_egc.Controllers
                 return StatusCode(200, new { message = $"Error de servidor {ex}" });
             }
         }
+
+        [HttpPost]
+        [Route("insert_member")]
+        public IActionResult InsertMember([FromBody] JsonObject json)
+        {
+            try
+            {
+                string connectionString = _configuration.GetConnectionString("DbEgcConnection")!;
+
+                // DATOS DE INTEGRANTE
+                string firstName = json["firstName"]!.ToString();
+                string lastName = json["lastName"]!.ToString();
+                int age = int.Parse(json["age"]!.ToString());
+                string cellPhone = json["cellPhone"]!.ToString();
+                long squadId = long.Parse(json["squadId"]!.ToString());
+                long positionId = long.Parse(json["positionId"]!.ToString());
+                bool isActive = bool.Parse(json["isActive"]!.ToString());
+                bool isAncient = bool.Parse(json["isAncient"]!.ToString());
+
+                // DATOS DE CARRERA
+                long establecimientoId = long.Parse(json["establecimientoId"]!.ToString());
+                string? anotherEstablishment = json["anotherEstablishment"]?.ToString();
+                long courseId = long.Parse(json["courseId"]!.ToString());
+                string? courseName = json["courseName"]?.ToString();
+                long degreeId = long.Parse(json["degreeId"]!.ToString());
+                string? degreeName = json["degreeName"]?.ToString();
+                string section = json["section"]!.ToString();
+
+                // OTROS DATOS
+                string? fatherName = json["fatherName"]?.ToString();
+                string? fatherCell = json["fatherCell"]?.ToString();
+                string? username = json["username"]?.ToString();
+
+                MemberUtils.EXEC_SP_INSERT_MEMBER(connectionString, firstName, lastName, age, cellPhone,
+                    establecimientoId, anotherEstablishment, courseId, courseName, degreeId, degreeName,
+                    section, squadId, positionId, isAncient, fatherName, fatherCell, isActive, username);
+
+                List<IntegrantePerYearDto> list = GeneralMethodsUtils.EXEC_SP_GET_BY_INSERT_PER_YEAR(connectionString);
+
+                foreach (IntegrantePerYearDto dto in list)
+                {
+                    GeneralMethodsUtils.EXEC_SP_INSERT_MEMEBER_PER_YEAR(connectionString, dto.INTIdIntegrante,
+                        dto.INTESCIdEscuadra, dto.INTPUIdPuesto);
+                }
+
+                return Ok(new
+                {
+                    ok = true,
+                });
+            }
+            catch (SqlException sqlEx)
+            {
+                return StatusCode(200, new { message = $"Error base de datos {sqlEx}" });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(200, new { message = $"Error de servidor {ex}" });
+            }
+        }
     }
 }

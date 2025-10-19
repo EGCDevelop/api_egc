@@ -33,6 +33,7 @@ namespace api_egc.Utils
                             INTIdIntegrante = Utils.GetValue<long>(reader, "INTIdIntegrante"),
                             INTNombres = Utils.GetValue<string>(reader, "INTNombres"),
                             INTApellidos = Utils.GetValue<string>(reader, "INTApellidos"),
+                            INTEdad = 1,
                             INTTelefono = Utils.GetValueNull<string>(reader, "INTTelefono"),
                             INTESTIdEstablecimiento = Utils.GetValue<long>(reader, "INTESTIdEstablecimiento"),
                             ESTNombreEstablecimiento = Utils.GetValue<string>(reader, "ESTNombreEstablecimiento"),
@@ -51,7 +52,8 @@ namespace api_egc.Utils
                             INTTelefonoEncargado = Utils.GetValueNull<string>(reader, "INTTelefonoEncargado"),
                             INTEstadoIntegrante = Utils.GetValue<int>(reader, "INTEstadoIntegrante"),
                             INTPUIdPuesto = Utils.GetValue<long>(reader, "INTPUIdPuesto"),
-                            PUNombre = Utils.GetValue<string>(reader, "PUNombre")
+                            PUNombre = Utils.GetValue<string>(reader, "PUNombre"),
+                            INTUsuario = Utils.GetValue<string>(reader, "INTUsuario")
                         };
 
                         list.Add(member);
@@ -91,6 +93,7 @@ namespace api_egc.Utils
                         INTIdIntegrante = Utils.GetValue<long>(reader, "INTIdIntegrante"),
                         INTNombres = Utils.GetValue<string>(reader, "INTNombres"),
                         INTApellidos = Utils.GetValue<string>(reader, "INTApellidos"),
+                        INTEdad = Utils.GetValue<int>(reader, "INTEdad"),
                         INTTelefono = Utils.GetValueNull<string>(reader, "INTTelefono"),
                         INTESTIdEstablecimiento = Utils.GetValue<long>(reader, "INTESTIdEstablecimiento"),
                         ESTNombreEstablecimiento = Utils.GetValue<string>(reader, "ESTNombreEstablecimiento"),
@@ -109,7 +112,8 @@ namespace api_egc.Utils
                         INTTelefonoEncargado = Utils.GetValueNull<string>(reader, "INTTelefonoEncargado"),
                         INTEstadoIntegrante = Utils.GetValue<int>(reader, "INTEstadoIntegrante"),
                         INTPUIdPuesto = Utils.GetValue<long>(reader, "INTPUIdPuesto"),
-                        PUNombre = Utils.GetValue<string>(reader, "PUNombre")
+                        PUNombre = Utils.GetValue<string>(reader, "PUNombre"),
+                        INTUsuario = Utils.GetValue<string>(reader, "INTUsuario")
                     };
 
                     list.Add(member);
@@ -120,8 +124,8 @@ namespace api_egc.Utils
 
 
         public static void EXEC_SP_UPDATE_MEMBER(string connectionString, long id, string firstName, string lastName, string cellPhone,
-        long squadId, long positionId, long isActive, long isAncient, long establecimientoId, string anotherEstablishment,
-        long courseId, string courseName, long degreeId, string section, string fatherName, string fatherCell)
+            long squadId, long positionId, long isActive, long isAncient, long establecimientoId, string anotherEstablishment,
+            long courseId, string courseName, long degreeId, string section, string fatherName, string fatherCell)
         {
             using (SqlConnection connection = new(connectionString))
             {
@@ -150,6 +154,49 @@ namespace api_egc.Utils
                     cmd.Parameters.Add("@INTTelefonoEncargado", SqlDbType.VarChar).Value = fatherCell;
 
                     // Ejecutar el procedimiento
+                    cmd.ExecuteNonQuery();
+                }
+            }
+        }
+
+        public static void EXEC_SP_INSERT_MEMBER(string connectionString, string firstName, string lastName, int years,
+            string cellPhone, long establecimientoId, string? anotherEstablishment, long courseId, string? courseName,
+            long degreeId, string? degreeName, string section, long squadId, long positionId,
+            bool isAncient, string? fatherName, string? fatherCell, bool isActive, string? username)
+        {
+            using (SqlConnection connection = new(connectionString))
+            {
+                connection.Open();
+
+                using (SqlCommand cmd = new("SP_INSERT_MEMBER", connection))
+                {
+                    cmd.CommandType = CommandType.StoredProcedure;
+
+                    cmd.Parameters.Add("@INTNombres", SqlDbType.NVarChar).Value = firstName;
+                    cmd.Parameters.Add("@INTApellidos", SqlDbType.NVarChar).Value = lastName;
+                    cmd.Parameters.Add("@INTEdad", SqlDbType.Int).Value = years;
+
+                    cmd.Parameters.Add("@INTTelefono", SqlDbType.VarChar).Value = cellPhone;
+                    cmd.Parameters.Add("@INTESTIdEstablecimiento", SqlDbType.BigInt).Value = establecimientoId;
+                    cmd.Parameters.Add("@INTEstablecimientoNombre", SqlDbType.NVarChar).Value = (object?)anotherEstablishment ?? DBNull.Value;
+
+                    cmd.Parameters.Add("@INTCARIdCarrera", SqlDbType.BigInt).Value = courseId;
+                    cmd.Parameters.Add("@INTCarreraNombre", SqlDbType.NVarChar).Value = (object?)courseName ?? DBNull.Value;
+
+                    cmd.Parameters.Add("@INTGRAIdGrado", SqlDbType.BigInt).Value = degreeId;
+                    cmd.Parameters.Add("@INTGradoNombre", SqlDbType.NVarChar).Value = (object?)degreeName ?? DBNull.Value;
+
+                    cmd.Parameters.Add("@INTSeccion", SqlDbType.VarChar).Value = section;
+                    cmd.Parameters.Add("@INTESCIdEscuadra", SqlDbType.BigInt).Value = squadId;
+                    cmd.Parameters.Add("@INTEsNuevo", SqlDbType.Bit).Value = isAncient;
+
+                    cmd.Parameters.Add("@INTNombreEncargado", SqlDbType.NVarChar).Value = (object?)fatherName ?? DBNull.Value;
+                    cmd.Parameters.Add("@INTTelefonoEncargado", SqlDbType.VarChar).Value = (object?)fatherCell ?? DBNull.Value;
+
+                    cmd.Parameters.Add("@INTEstadoIntegrante", SqlDbType.Bit).Value = isActive;
+                    cmd.Parameters.Add("@INTPUIdPuesto", SqlDbType.BigInt).Value = positionId;
+                    cmd.Parameters.Add("@INTUsuario", SqlDbType.VarChar).Value = (object?)username ?? DBNull.Value;
+
                     cmd.ExecuteNonQuery();
                 }
             }

@@ -8,7 +8,9 @@
 
 		public required string INTApellidos { get; set; }
 
-		public string? INTTelefono { get; set; }
+        public required int INTEdad { get; set; }
+
+        public string? INTTelefono { get; set; }
 
 		public required long INTESTIdEstablecimiento { get; set; }
 
@@ -45,5 +47,7 @@
         public required long INTPUIdPuesto { get; set; }
 
         public required string PUNombre { get; set; }
+
+        public string? INTUsuario { get; set; }
     }
 }
