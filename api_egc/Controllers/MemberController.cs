@@ -95,6 +95,12 @@ namespace api_egc.Controllers
                 long isActive = long.Parse(json["isActive"]!.ToString());
                 long isAncient = long.Parse(json["isAncient"]!.ToString());
 
+                int age = 0;
+                if (json.ContainsKey("age") && json["age"] != null && json["age"]!.ToString() != "")
+                {
+                    int.TryParse(json["age"]!.ToString(), out age);
+                }
+
                 // DATOS DE CARRERA
                 long establecimientoId = long.Parse(json["establecimientoId"]!.ToString());
                 string anotherEstablishment = json["anotherEstablishment"]!.ToString();
@@ -107,9 +113,17 @@ namespace api_egc.Controllers
                 string fatherName = json["fatherName"]!.ToString();
                 string fatherCell = json["fatherCell"]!.ToString();
 
-                MemberUtils.EXEC_SP_UPDATE_MEMBER(connectionString, id, firstName, lastName, cellPhone, squadId, positionId, 
+                string username = "";
+                string password = "";
+                if(json.ContainsKey("username") && json["username"] != null && json["username"]!.ToString() != "")
+                {
+                    username = json["username"]!.ToString();
+                    password = PasswordHasher.HashPassword(json["password"]!.ToString());
+                }
+
+                MemberUtils.EXEC_SP_UPDATE_MEMBER(connectionString, id, firstName, lastName, cellPhone, squadId, positionId,
                     isActive, isAncient, establecimientoId, anotherEstablishment, courseId, courseName, degreeId, section,
-                    fatherName, fatherCell);
+                    fatherName, fatherCell, age, username, password);
 
                 return Ok(new
                 {
@@ -169,6 +183,34 @@ namespace api_egc.Controllers
                     GeneralMethodsUtils.EXEC_SP_INSERT_MEMEBER_PER_YEAR(connectionString, dto.INTIdIntegrante,
                         dto.INTESCIdEscuadra, dto.INTPUIdPuesto);
                 }
+
+                return Ok(new
+                {
+                    ok = true,
+                });
+            }
+            catch (SqlException sqlEx)
+            {
+                return StatusCode(200, new { message = $"Error base de datos {sqlEx}" });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(200, new { message = $"Error de servidor {ex}" });
+            }
+        }
+
+        [HttpPut]
+        [Route("update_member_state")]
+        public IActionResult UpdateMemberState([FromBody] JsonObject json)
+        {
+            try
+            {
+                string connectionString = _configuration.GetConnectionString("DbEgcConnection")!;
+                long memberId = long.Parse(json["memberId"]!.ToString());
+                int newState = int.Parse(json["newState"]!.ToString());
+                string comment = json["comment"]!.ToString();
+
+                MemberUtils.EXEC_SP_UPDATE_MEMBER_STATE(connectionString, memberId, newState, comment);
 
                 return Ok(new
                 {
