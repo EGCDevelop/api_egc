@@ -55,7 +55,7 @@ namespace api_egc.Controllers
         [HttpGet]
         [Route("get_member_for_instructor")]
         public IActionResult GetMemberForInstructor([FromQuery] string? like, [FromQuery] long? squadId, [FromQuery] long? schoolId,
-            [FromQuery] int? isNew, [FromQuery] int? memberState, [FromQuery] int? career)
+            [FromQuery] int? isNew, [FromQuery] int? memberState, [FromQuery] int? career, [FromQuery] int? positionId)
         {
             try
             {
@@ -64,7 +64,7 @@ namespace api_egc.Controllers
 
                 string search = string.IsNullOrWhiteSpace(like) ? "%" : like.ToLower();
 
-                List<MemberDTO> list = MemberUtils.EXEC_SP_GET_INTEGRANTE_FOR_INSTRUCTOR(connectionString, year, search, squadId, schoolId, isNew, memberState, career);
+                List<MemberDTO> list = MemberUtils.EXEC_SP_GET_INTEGRANTE_FOR_INSTRUCTOR(connectionString, year, search, squadId, schoolId, isNew, memberState, career, positionId);
 
                 return Ok(new
                 {

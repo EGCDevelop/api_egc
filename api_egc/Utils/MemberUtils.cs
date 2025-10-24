@@ -64,7 +64,7 @@ namespace api_egc.Utils
         }
 
         public static List<MemberDTO> EXEC_SP_GET_INTEGRANTE_FOR_INSTRUCTOR(string connectionString, int year, string like,
-            long? squadId, long? schoolId, int? isNew, int? memberState, int? career)
+            long? squadId, long? schoolId, int? isNew, int? memberState, int? career, int? positionId)
         {
             List<MemberDTO> list = [];
 
@@ -82,7 +82,7 @@ namespace api_egc.Utils
                 cmd.Parameters.Add("@EsNuevo", SqlDbType.Int).Value = isNew == 3 ? 0 : isNew == 0 ? 2 : isNew;
                 cmd.Parameters.Add("@EstadoIntegrante", SqlDbType.Int).Value = memberState;
                 cmd.Parameters.Add("@IdCarrera", SqlDbType.Int).Value = career;
-
+                cmd.Parameters.Add("@PositionId", SqlDbType.Int).Value = positionId;
 
                 using SqlDataReader reader = cmd.ExecuteReader();
 
