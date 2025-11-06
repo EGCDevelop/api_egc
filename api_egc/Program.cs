@@ -12,13 +12,23 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 // Configuramos CORS
+//builder.Services.AddCors(options =>
+//{
+//    options.AddPolicy("AllowAllOrigins", builder =>
+//    {
+//        builder.AllowAnyOrigin()
+//        .AllowAnyMethod()
+//        .AllowAnyHeader();
+//    });
+//});
+
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowAllOrigins", builder =>
+    options.AddPolicy("AllowFrontend", builder =>
     {
-        builder.AllowAnyOrigin()
-        .AllowAnyMethod()
-        .AllowAnyHeader();
+        builder.WithOrigins("https://bandaegc.com")
+               .AllowAnyMethod()
+               .AllowAnyHeader();
     });
 });
 
@@ -79,6 +89,7 @@ app.UseAuthorization();
 
 app.MapControllers();
 
-app.UseCors("AllowAllOrigins");
+//app.UseCors("AllowAllOrigins");
+app.UseCors("AllowFrontend");
 
 app.Run();
