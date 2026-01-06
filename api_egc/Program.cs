@@ -12,25 +12,26 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 // Configuramos CORS
-//builder.Services.AddCors(options =>
-//{
-//    options.AddPolicy("AllowAllOrigins", builder =>
-//    {
-//        builder.AllowAnyOrigin()
-//        .AllowAnyMethod()
-//        .AllowAnyHeader();
-//    });
-//});
-
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowFrontend", builder =>
+    options.AddPolicy("AllowAllOrigins", builder =>
     {
-        builder.WithOrigins("https://bandaegc.com")
-               .AllowAnyMethod()
-               .AllowAnyHeader();
+        builder.AllowAnyOrigin()
+        .AllowAnyMethod()
+        .AllowAnyHeader();
     });
 });
+
+// para produccion
+//builder.Services.AddCors(options =>
+//{
+//    options.AddPolicy("AllowFrontend", builder =>
+//    {
+//        builder.WithOrigins("https://bandaegc.com")
+//               .AllowAnyMethod()
+//               .AllowAnyHeader();
+//    });
+//});
 
 // Configure JWT authentication
 var key = Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]!);
@@ -89,7 +90,7 @@ app.UseAuthorization();
 
 app.MapControllers();
 
-//app.UseCors("AllowAllOrigins");
-app.UseCors("AllowFrontend");
+app.UseCors("AllowAllOrigins");
+//app.UseCors("AllowFrontend");
 
 app.Run();

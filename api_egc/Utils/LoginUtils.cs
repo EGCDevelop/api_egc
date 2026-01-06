@@ -1,6 +1,5 @@
 ﻿using api_egc.Models;
 using api_egc.Models.Instructors;
-using Newtonsoft.Json.Linq;
 using System.Data;
 using System.Data.SqlClient;
 
@@ -135,7 +134,8 @@ namespace api_egc.Utils
                             INSCorreo = Utils.GetValueNull<string>(reader, "INSCorreo"),
                             INSPassword = Utils.GetValue<string>(reader, "INSPassword"),
                             INTPIId = Utils.GetValue<int>(reader, "INTPIId"),
-                            INSArea = Utils.GetValue<string>(reader, "INSArea")
+                            INSArea = Utils.GetValue<string>(reader, "INSArea"),
+                            INSRol = Utils.GetValue<int>(reader, "INSRol")
                         };
                     }
                 }

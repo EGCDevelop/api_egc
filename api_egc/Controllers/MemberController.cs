@@ -54,7 +54,7 @@ namespace api_egc.Controllers
 
         [HttpGet]
         [Route("get_member_for_instructor")]
-        public IActionResult GetMemberForInstructor([FromQuery] string? like, [FromQuery] long? squadId, [FromQuery] long? schoolId,
+        public IActionResult GetMemberForInstructor([FromQuery] string? like, [FromQuery] string? squadId, [FromQuery] long? schoolId,
             [FromQuery] int? isNew, [FromQuery] int? memberState, [FromQuery] int? career, [FromQuery] int? positionId)
         {
             try

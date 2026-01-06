@@ -113,6 +113,7 @@ namespace api_egc.Controllers
                         username
                     });
                 }
+                // buscamos informacion del instructor
                 else
                 {
                     InstructorDTO instructor = LoginUtils.EXEC_SP_GET_INSTRUCTOR_BY_USERNAME(connectionString, username);
@@ -154,6 +155,13 @@ namespace api_egc.Controllers
 
                         LoginUtils.EXEC_SP_UPDATE_TOKEN_INSTRUCTOR(connectionString, username, tokenHandler.WriteToken(token));
                         LoginUtils.EXEC_SP_INSERT_BITACORA_INSTRUCTOR(connectionString, instructor.INSId);
+                        List<EscuadrasInstructoresDTO> squadList = InstructorUtils.EXEC_SP_GET_ASSIGNED_SQUADS_INSTRUCTORS(connectionString, instructor.INSId);
+                        List<int> squadIdList = [];
+                        foreach (EscuadrasInstructoresDTO squad in squadList)
+                        {
+                            squadIdList.Add(squad.IdEscuadra);
+                        }
+
 
                         return Ok(new
                         {
@@ -166,6 +174,8 @@ namespace api_egc.Controllers
                             idPuesto = instructor.INTPIId,
                             area = instructor.INSArea,
                             token = tokenHandler.WriteToken(token),
+                            rol = instructor.INSRol,
+                            squadIdList,
                             username
                         });
                     }

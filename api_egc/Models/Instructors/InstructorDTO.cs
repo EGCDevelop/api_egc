@@ -17,5 +17,7 @@
         public required int INTPIId { get; set; }
 
 		public required string INSArea { get; set; }
+
+		public required int INSRol { get; set; }
     }
 }

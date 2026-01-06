@@ -53,7 +53,7 @@ namespace api_egc.Utils
                             INTEstadoIntegrante = Utils.GetValue<int>(reader, "INTEstadoIntegrante"),
                             INTPUIdPuesto = Utils.GetValue<long>(reader, "INTPUIdPuesto"),
                             PUNombre = Utils.GetValue<string>(reader, "PUNombre"),
-                            INTUsuario = Utils.GetValue<string>(reader, "INTUsuario")
+                            INTUsuario = Utils.GetValueNull<string>(reader, "INTUsuario")
                         };
 
                         list.Add(member);
@@ -64,7 +64,7 @@ namespace api_egc.Utils
         }
 
         public static List<MemberDTO> EXEC_SP_GET_INTEGRANTE_FOR_INSTRUCTOR(string connectionString, int year, string like,
-            long? squadId, long? schoolId, int? isNew, int? memberState, int? career, int? positionId)
+            string? squadId, long? schoolId, int? isNew, int? memberState, int? career, int? positionId)
         {
             List<MemberDTO> list = [];
 
@@ -77,7 +77,8 @@ namespace api_egc.Utils
 
                 cmd.Parameters.Add("@Anio", SqlDbType.Int).Value = year;
                 cmd.Parameters.Add("@Like", SqlDbType.NVarChar, 100).Value = string.IsNullOrEmpty(like) ? DBNull.Value : like;
-                cmd.Parameters.Add("@IdEscuadra", SqlDbType.BigInt).Value = squadId;
+                //cmd.Parameters.Add("@IdEscuadra", SqlDbType.BigInt).Value = squadId;
+                cmd.Parameters.Add("@IdEscuadra", SqlDbType.NVarChar, -1).Value = (object)squadId ?? DBNull.Value;
                 cmd.Parameters.Add("@IdEstablecimiento", SqlDbType.BigInt).Value = schoolId;
                 cmd.Parameters.Add("@EsNuevo", SqlDbType.Int).Value = isNew == 3 ? 0 : isNew == 0 ? 2 : isNew;
                 cmd.Parameters.Add("@EstadoIntegrante", SqlDbType.Int).Value = memberState;
