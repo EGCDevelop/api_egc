@@ -77,7 +77,6 @@ namespace api_egc.Utils
 
                 cmd.Parameters.Add("@Anio", SqlDbType.Int).Value = year;
                 cmd.Parameters.Add("@Like", SqlDbType.NVarChar, 100).Value = string.IsNullOrEmpty(like) ? DBNull.Value : like;
-                //cmd.Parameters.Add("@IdEscuadra", SqlDbType.BigInt).Value = squadId;
                 cmd.Parameters.Add("@IdEscuadra", SqlDbType.NVarChar, -1).Value = (object)squadId ?? DBNull.Value;
                 cmd.Parameters.Add("@IdEstablecimiento", SqlDbType.BigInt).Value = schoolId;
                 cmd.Parameters.Add("@EsNuevo", SqlDbType.Int).Value = isNew == 3 ? 0 : isNew == 0 ? 2 : isNew;

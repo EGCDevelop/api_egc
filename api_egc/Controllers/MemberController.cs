@@ -46,9 +46,14 @@ namespace api_egc.Controllers
                     list
                 });
             }
+            catch (SqlException sqlEx)
+            {
+                return StatusCode(500, new { message = $"Error SQL al obtener integrantes {sqlEx}" });
+
+            }
             catch (Exception ex)
             {
-                return StatusCode(200, new { message = $"Error al hacer login {ex}" });
+                return StatusCode(500, new { message = $"Error al obtener integrantes {ex}" });
             }
         }
 

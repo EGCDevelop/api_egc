@@ -83,5 +83,82 @@ namespace api_egc.Controllers
                 return StatusCode(500, new { ok = false, message = $"Error {ex}" });
             }
         }
+
+        [HttpGet]
+        [Route("get_instructor")]
+        public IActionResult GetInstructor([FromQuery] string? like, [FromQuery] int state, [FromQuery] int puesto)
+        {
+            try
+            {
+                string connectionString = _configuration.GetConnectionString("DbEgcConnection")!;
+                string search = string.IsNullOrWhiteSpace(like) ? "%" : like.ToLower();
+
+                List<Instructor> list = InstructorUtils.EXEC_SP_GET_INSTRUCTORS_BY_FILTERS(connectionString, state, puesto, search);
+
+                return Ok(new
+                {
+                    ok = true,
+                    list
+                });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(200, new { message = $"Error al hacer login {ex}" });
+            }
+        }
+
+        [HttpPost]
+        [Route("create_instructor")]
+        public IActionResult CreateInstructor([FromBody] InstructorPayload json)
+        {
+            try
+            {
+                if (json == null) return BadRequest("El cuerpo de la petición está vacío");
+
+                string connectionString = _configuration.GetConnectionString("DbEgcConnection")!;
+                InstructorUtils.TRANSACTION_INSERT_INSTRUCTOR(connectionString, json);
+
+                return Ok(new
+                {
+                    ok = true,
+                });
+
+            }
+            catch (SqlException ex)
+            {
+                return StatusCode(500, new { ok = false, message = $"Error SQL CreateInstructor {ex}" });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { ok = false, message = $"Error CreateInstructor {ex}" });
+            }
+        }
+
+        [HttpPut]
+        [Route("update_instructor")]
+        public IActionResult UpdateInstructor([FromBody] InstructorPayload json)
+        {
+            try
+            {
+                if (json == null) return BadRequest("El cuerpo de la petición está vacío");
+
+                string connectionString = _configuration.GetConnectionString("DbEgcConnection")!;
+
+                InstructorUtils.TRANSACTION_UPDATE_INSTRUCTOR(connectionString, json);
+
+                return Ok(new
+                {
+                    ok = true,
+                });
+            }
+            catch (SqlException ex)
+            {
+                return StatusCode(500, new { ok = false, message = $"Error SQL UpdateInstructor {ex}" });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { ok = false, message = $"Error UpdateInstructor {ex}" });
+            }
+        }
     }
 }

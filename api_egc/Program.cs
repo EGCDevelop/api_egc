@@ -90,7 +90,10 @@ app.UseAuthorization();
 
 app.MapControllers();
 
+// para dev
 app.UseCors("AllowAllOrigins");
+
+// para produccion
 //app.UseCors("AllowFrontend");
 
 app.Run();

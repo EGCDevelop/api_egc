@@ -34,5 +34,21 @@ namespace api_egc.Utils
 
             return (T)Convert.ChangeType(value, typeof(T));
         }
+
+        public static String UsernameGenerate(string name, string lastName)
+        {
+            string cleanName = name.Trim().ToLower();
+            string cleanLastName = lastName.Trim().ToLower();
+
+            string[] names = cleanName.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+            string[] lastNames = cleanLastName.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+
+            string firstInitial = names.Length > 0 ? names[0][0].ToString() : "";
+            string firstLastName = lastNames.Length > 0 ? lastNames[0] : "";
+            string secondLastNameInitial = lastNames.Length > 1 ? lastNames[1][0].ToString() : "";
+
+            return $"{firstInitial}{firstLastName}{secondLastNameInitial}";
+        }
+
     }
 }
