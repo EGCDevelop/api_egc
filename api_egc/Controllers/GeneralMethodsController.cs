@@ -31,7 +31,8 @@ namespace api_egc.Controllers
         {
             try
             {
-                string connectionString = _configuration.GetConnectionString("DbEgcConnection")!;
+                //string connectionString = _configuration.GetConnectionString("DbEgcConnection")!;
+                string connectionString = _configuration.GetConnectionString(ConfigController.CurrentEnvironment)!;
                 List<Escuadras> list = GeneralMethodsUtils.EXEC_SP_GET_ESCUADRA(connectionString);
 
                 return Ok(new
@@ -42,10 +43,12 @@ namespace api_egc.Controllers
             }
             catch (SqlException ex)
             {
+                _logger.LogInformation($"ERROR == {ex.StackTrace}");
                 return StatusCode(500, new { ok = false,  message = $"Error SQL {ex}" });
             }
             catch (Exception ex)
             {
+                _logger.LogInformation($"ERROR == {ex.StackTrace}");
                 return StatusCode(500, new { ok = false,  message = $"Error {ex}" });
             }
         }
@@ -57,7 +60,7 @@ namespace api_egc.Controllers
         {
             try
             {
-                string connectionString = _configuration.GetConnectionString("DbEgcConnection")!;
+                string connectionString = _configuration.GetConnectionString(ConfigController.CurrentEnvironment)!;
                 List<Establishment> list = GeneralMethodsUtils.EXEC_SP_GET_ESTABLECIMIENTO(connectionString);
 
                 return Ok(new
@@ -82,7 +85,7 @@ namespace api_egc.Controllers
         {
             try
             {
-                string connectionString = _configuration.GetConnectionString("DbEgcConnection")!;
+                string connectionString = _configuration.GetConnectionString(ConfigController.CurrentEnvironment)!;
                 List<Grado> list = GeneralMethodsUtils.EXEC_SP_GET_GRADO(connectionString);
 
                 return Ok(new
@@ -107,7 +110,7 @@ namespace api_egc.Controllers
         {
             try
             {
-                string connectionString = _configuration.GetConnectionString("DbEgcConnection")!;
+                string connectionString = _configuration.GetConnectionString(ConfigController.CurrentEnvironment)!;
                 List<Carrera> list = GeneralMethodsUtils.EXEC_SP_GET_CARRERA(connectionString);
 
                 return Ok(new
@@ -133,7 +136,7 @@ namespace api_egc.Controllers
         {
             try
             {
-                string connectionString = _configuration.GetConnectionString("DbEgcConnection")!;
+                string connectionString = _configuration.GetConnectionString(ConfigController.CurrentEnvironment)!;
                 List<Position> list = GeneralMethodsUtils.EXEC_SP_GET_POSITION(connectionString);
 
                 return Ok(new
@@ -160,7 +163,7 @@ namespace api_egc.Controllers
         {
             try
             {
-                string connectionString = _configuration.GetConnectionString("DbEgcConnection")!;
+                string connectionString = _configuration.GetConnectionString(ConfigController.CurrentEnvironment)!;
                 List<IntegrantePerYearDto>  list = GeneralMethodsUtils.EXEC_SP_GET_BY_INSERT_PER_YEAR(connectionString);
 
                 foreach(IntegrantePerYearDto dto in list)
@@ -191,7 +194,7 @@ namespace api_egc.Controllers
         {
             try
             {
-                string connectionString = _configuration.GetConnectionString("DbEgcConnection")!;
+                string connectionString = _configuration.GetConnectionString(ConfigController.CurrentEnvironment)!;
                 List<InstructorPositions> list = GeneralMethodsUtils.EXEC_SP_GET_INSTRUCTOR_POSITIONS(connectionString);
 
                 return Ok(new

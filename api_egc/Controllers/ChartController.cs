@@ -29,7 +29,8 @@ namespace api_egc.Controllers
         {
             try
             {
-                string connectionString = _configuration.GetConnectionString("DbEgcConnection")!;
+                //string connectionString = _configuration.GetConnectionString("DbEgcConnection")!;
+                string connectionString = _configuration.GetConnectionString(ConfigController.CurrentEnvironment)!;
                 List<AttendanceChartDTO> list = ChartUtils.EXEC_SP_GET_DATA_FROM_ATTENDANCE_CHART(connectionString, eventId, squadId);
 
                 return Ok(new

@@ -13,5 +13,10 @@
 		public required long INTPUIdPuesto { get; set; }
 
         public required string INTPassword { get; set; }
+
+        public override string ToString()
+        {
+            return $"Member [ID: {INTIdIntegrante}, Nombre: {INTNombres} {INTApellidos}, Escuadra: {INTESCIdEscuadra}, Puesto: {INTPUIdPuesto}, INTPassword: {INTPassword}]";
+        }
     }
 }

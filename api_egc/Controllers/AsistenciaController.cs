@@ -33,7 +33,9 @@ namespace api_egc.Controllers
         {
             try
             {
-                string connectionString = _configuration.GetConnectionString("DbEgcConnection")!;
+                //string connectionString = _configuration.GetConnectionString("DbEgcConnection")!;
+                string connectionString = _configuration.GetConnectionString(ConfigController.CurrentEnvironment)!;
+
                 long idIntegrante = long.Parse(json["id"]!.ToString());
                 long escuadraComandante = long.Parse(json["escuadra"]!.ToString());
                 long puestoComandante = long.Parse(json["puesto"]!.ToString());
@@ -81,7 +83,7 @@ namespace api_egc.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(200, new { message = $"Error al hacer login {ex}" });
+                return StatusCode(500, new { message = $"Error al hacer login {ex}" });
             }
         }
 
@@ -92,7 +94,7 @@ namespace api_egc.Controllers
         {
             try
             {
-                string connectionString = _configuration.GetConnectionString("DbEgcConnection")!;
+                string connectionString = _configuration.GetConnectionString(ConfigController.CurrentEnvironment)!;
                 List<AsistenciaDto> list = [];
 
                 bool exist = AsistenciaUtils.EXEC_SP_VALIDATE_EVENT_EXIST(connectionString, idEscuadra, eventId);
@@ -118,7 +120,7 @@ namespace api_egc.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(200, new { message = $"Error al hacer login {ex}" });
+                return StatusCode(500, new { message = $"Error al hacer login {ex}" });
             }
         }
 

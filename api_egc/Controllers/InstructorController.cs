@@ -31,7 +31,8 @@ namespace api_egc.Controllers
         {
             try
             {
-                string connectionString = _configuration.GetConnectionString("DbEgcConnection")!;
+                //string connectionString = _configuration.GetConnectionString("DbEgcConnection")!;
+                string connectionString = _configuration.GetConnectionString(ConfigController.CurrentEnvironment)!;
                 List<EscuadrasInstructoresDTO> data = InstructorUtils.EXEC_SP_GET_ASSIGNED_SQUADS_INSTRUCTORS(connectionString, idInstructor);
 
                 return Ok(new
@@ -55,7 +56,8 @@ namespace api_egc.Controllers
         {
             try
             {
-                string connectionString = _configuration.GetConnectionString("DbEgcConnection")!;
+                string connectionString = _configuration.GetConnectionString(ConfigController.CurrentEnvironment)!;
+
                 long id = long.Parse(json["id"]!.ToString());
                 string name = json["name"]!.ToString();
                 string lasrName = json["lastName"]!.ToString();
@@ -90,7 +92,7 @@ namespace api_egc.Controllers
         {
             try
             {
-                string connectionString = _configuration.GetConnectionString("DbEgcConnection")!;
+                string connectionString = _configuration.GetConnectionString(ConfigController.CurrentEnvironment)!;
                 string search = string.IsNullOrWhiteSpace(like) ? "%" : like.ToLower();
 
                 List<Instructor> list = InstructorUtils.EXEC_SP_GET_INSTRUCTORS_BY_FILTERS(connectionString, state, puesto, search);
@@ -103,7 +105,7 @@ namespace api_egc.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(200, new { message = $"Error al hacer login {ex}" });
+                return StatusCode(500, new { message = $"Error al hacer login {ex}" });
             }
         }
 
@@ -115,7 +117,7 @@ namespace api_egc.Controllers
             {
                 if (json == null) return BadRequest("El cuerpo de la petición está vacío");
 
-                string connectionString = _configuration.GetConnectionString("DbEgcConnection")!;
+                string connectionString = _configuration.GetConnectionString(ConfigController.CurrentEnvironment)!;
                 InstructorUtils.TRANSACTION_INSERT_INSTRUCTOR(connectionString, json);
 
                 return Ok(new
@@ -142,7 +144,7 @@ namespace api_egc.Controllers
             {
                 if (json == null) return BadRequest("El cuerpo de la petición está vacío");
 
-                string connectionString = _configuration.GetConnectionString("DbEgcConnection")!;
+                string connectionString = _configuration.GetConnectionString(ConfigController.CurrentEnvironment)!;
 
                 InstructorUtils.TRANSACTION_UPDATE_INSTRUCTOR(connectionString, json);
 

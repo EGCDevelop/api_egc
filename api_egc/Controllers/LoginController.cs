@@ -42,10 +42,13 @@ namespace api_egc.Controllers
                 string password = json["password"]!.ToString();
                 string version = json["version"]!.ToString();
 
-                string connectionString = _configuration.GetConnectionString("DbEgcConnection")!;
+                //string connectionString = _configuration.GetConnectionString("DbEgcConnection")!;
+
+                string connectionString = _configuration.GetConnectionString(ConfigController.CurrentEnvironment)!;
+
+                //_logger.LogInformation($"connectionString == {connectionString}");
 
                 Versiones dbVersion = LoginUtils.EXEC_SP_VERSION_APP(connectionString);
-
 
                 // comparamos si las versiones son iguales
                 if (!version.Equals(dbVersion.VERNumero))
@@ -56,7 +59,6 @@ namespace api_egc.Controllers
                         message = "¡ UPS ! debes actualizar a la versión más reciente"
                     });
                 }
-
 
                 // buscamos la informacion del integrante
                 Member member = LoginUtils.EXEC_SP_GET_MEMBER_BY_USERNAME(connectionString, username);
@@ -205,7 +207,9 @@ namespace api_egc.Controllers
         {
             try
             {
-                string connectionString = _configuration.GetConnectionString("DbEgcConnection")!;
+                //string connectionString = _configuration.GetConnectionString(ConfigController.CurrentEnvironment)!;
+
+                string connectionString = _configuration.GetConnectionString(ConfigController.CurrentEnvironment)!;
 
                 string username = json["username"]!.ToString();
                 string password = json["password"]!.ToString();
@@ -231,7 +235,7 @@ namespace api_egc.Controllers
         {
             try
             {
-                string connectionString = _configuration.GetConnectionString("DbEgcConnection")!;
+                string connectionString = _configuration.GetConnectionString(ConfigController.CurrentEnvironment)!;
 
                 string username = json["username"]!.ToString();
                 string password = json["password"]!.ToString();

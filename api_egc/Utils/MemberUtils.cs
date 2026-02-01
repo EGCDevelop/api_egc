@@ -153,7 +153,7 @@ namespace api_egc.Utils
             cmd.Parameters.Add("@INTNombreEncargado", SqlDbType.NVarChar).Value = fatherName;
             cmd.Parameters.Add("@INTTelefonoEncargado", SqlDbType.VarChar).Value = fatherCell;
             cmd.Parameters.Add("@Username", SqlDbType.VarChar, 50).Value = String.IsNullOrEmpty(username) ? DBNull.Value : username;
-            cmd.Parameters.Add("@Password", SqlDbType.NVarChar, 100).Value = String.IsNullOrEmpty(password) ? DBNull.Value : password;
+            cmd.Parameters.Add("@Password", SqlDbType.NVarChar, 500).Value = String.IsNullOrEmpty(password) ? DBNull.Value : password;
 
             // Ejecutar el procedimiento
             cmd.ExecuteNonQuery();

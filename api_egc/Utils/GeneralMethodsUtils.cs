@@ -222,5 +222,24 @@ namespace api_egc.Utils
 
             return list;
         }
+
+        public static void EXEC_SP_UPDATE_MEMBER_PER_YEAR(string connectionString, long memberId, long squadId,
+            long positionId)
+        {
+            int year = DateTime.Now.Year;
+            using SqlConnection connection = new(connectionString);
+            connection.Open();
+
+            using SqlCommand cmd = new("SP_UPDATE_MEMBER_PER_YEAR", connection);
+            cmd.CommandType = CommandType.StoredProcedure;
+
+            cmd.Parameters.Add("@memberId", SqlDbType.BigInt).Value = memberId;
+            cmd.Parameters.Add("@squadId", SqlDbType.BigInt).Value = squadId;
+            cmd.Parameters.Add("@positionId", SqlDbType.BigInt).Value = positionId;
+            cmd.Parameters.Add("@year", SqlDbType.Int).Value = year;
+
+            // Ejecutar el procedimiento
+            cmd.ExecuteNonQuery();
+        }
     }
 }

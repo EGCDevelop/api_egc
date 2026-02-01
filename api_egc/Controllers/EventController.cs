@@ -33,7 +33,9 @@ namespace api_egc.Controllers
         {
             try
             {
-                string connectionString = _configuration.GetConnectionString("DbEgcConnection")!;
+                //string connectionString = _configuration.GetConnectionString("DbEgcConnection")!;
+                string connectionString = _configuration.GetConnectionString(ConfigController.CurrentEnvironment)!;
+
                 string title = json["title"]!.ToString();
                 string description = json["description"]!.ToString();
                 string userCreate = json["userCreate"]!.ToString();
@@ -102,7 +104,7 @@ namespace api_egc.Controllers
                 DateTime fechaInicio = new(DateTime.Now.Year, DateTime.Now.Month, 1);
                 DateTime fechaFin = fechaInicio.AddMonths(1).AddDays(-1);
 
-                string connectionString = _configuration.GetConnectionString("DbEgcConnection")!;
+                string connectionString = _configuration.GetConnectionString(ConfigController.CurrentEnvironment)!;
                 List<Event> list = EventUtils.EXEC_SP_GET_EVENTS_BY_ID_SQUAD(connectionString, idEscuadra, fechaInicio, fechaFin, 1);
 
                 return Ok(new
@@ -127,8 +129,8 @@ namespace api_egc.Controllers
         {
             try
             {
-                string connectionString = _configuration.GetConnectionString("DbEgcConnection")!;
-                
+                string connectionString = _configuration.GetConnectionString(ConfigController.CurrentEnvironment)!;
+
                 //EventUtils.EXEC_SP_DELETE_DETALLE_EVENTO(connectionString, idEvent);
                 EventUtils.EXEC_SP_DELETE_EVENTO(connectionString, idEvent);
 
@@ -158,11 +160,7 @@ namespace api_egc.Controllers
                 DateTime fechaInicio = DateTime.Now.Date;
                 DateTime fechaFin = DateTime.Now.Date;
 
-                _logger.LogInformation($"fechaInicio == {fechaInicio}");
-                _logger.LogInformation($"fechaFin == {fechaFin}");
-                _logger.LogInformation($"idEscuadra == {idEscuadra}");
-
-                string connectionString = _configuration.GetConnectionString("DbEgcConnection")!;
+                string connectionString = _configuration.GetConnectionString(ConfigController.CurrentEnvironment)!;
                 List<Event> list = EventUtils.EXEC_SP_GET_EVENTS_BY_ID_SQUAD(connectionString, idEscuadra, fechaInicio, fechaFin, 1);
 
                 return Ok(new
@@ -188,7 +186,7 @@ namespace api_egc.Controllers
             try
             {
 
-                string connectionString = _configuration.GetConnectionString("DbEgcConnection")!;
+                string connectionString = _configuration.GetConnectionString(ConfigController.CurrentEnvironment)!;
                 List<Event> list = EventUtils.EXEC_SP_GET_EVENTS_BY_ID_SQUAD(connectionString, idEscuadra, date.Date, date.Date, 1);
 
                 return Ok(new
@@ -213,7 +211,7 @@ namespace api_egc.Controllers
         {
             try
             {
-                string connectionString = _configuration.GetConnectionString("DbEgcConnection")!;
+                string connectionString = _configuration.GetConnectionString(ConfigController.CurrentEnvironment)!;
                 List<Escuadras> list = EventUtils.EXEC_SP_GET_ESCUADRAS_BY_EVENT(connectionString, id);
                 return Ok(new
                 {
@@ -223,11 +221,11 @@ namespace api_egc.Controllers
             }
             catch (SqlException sqlEx)
             {
-                return StatusCode(200, new { message = $"Error base de datos {sqlEx}" });
+                return StatusCode(500, new { message = $"Error base de datos {sqlEx}" });
             }
             catch (Exception ex)
             {
-                return StatusCode(200, new { message = $"Error de servidor {ex}" });
+                return StatusCode(500, new { message = $"Error de servidor {ex}" });
             }
         }
 

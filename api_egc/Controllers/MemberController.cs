@@ -123,12 +123,13 @@ namespace api_egc.Controllers
                 if(json.ContainsKey("username") && json["username"] != null && json["username"]!.ToString() != "")
                 {
                     username = json["username"]!.ToString();
-                    password = PasswordHasher.HashPassword(json["password"]!.ToString());
                 }
 
                 MemberUtils.EXEC_SP_UPDATE_MEMBER(connectionString, id, firstName, lastName, cellPhone, squadId, positionId,
                     isActive, isAncient, establecimientoId, anotherEstablishment, courseId, courseName, degreeId, section,
                     fatherName, fatherCell, age, username, password);
+
+                GeneralMethodsUtils.EXEC_SP_UPDATE_MEMBER_PER_YEAR(connectionString, id, squadId, positionId);
 
                 return Ok(new
                 {
@@ -141,7 +142,7 @@ namespace api_egc.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(200, new { message = $"Error de servidor {ex}" });
+                return StatusCode(500, new { message = $"Error de servidor {ex}" });
             }
         }
 
