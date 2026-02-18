@@ -44,7 +44,7 @@ namespace api_egc.Controllers
                 HashSet<long> generales = [1, 2, 3, 4];
 
 
-                bool asistencia = AsistenciaUtils.EXEC_SP_GET_ASISTENCIA_BY_INTEGRANTE(connectionString, idIntegrante);
+                bool asistencia = AsistenciaUtils.EXEC_SP_GET_ASISTENCIA_BY_INTEGRANTE(connectionString, idIntegrante, eventId);
 
                 _logger.LogInformation($"asistencia == {asistencia}");
 
@@ -60,7 +60,6 @@ namespace api_egc.Controllers
                 if (!generales.Contains(puestoComandante))
                 {
                     // Si no es un general procedemos a validar que el comandante y el integrante sean de la misma escuadra
-                    _logger.LogInformation("no es un general, validamos que sea de la misma escuadra");
                     IntegranteDto integrante = AsistenciaUtils.EXEC_SP_GET_INTEGRANTE_BY_ID(connectionString, idIntegrante);
 
                     if(escuadraComandante != integrante.INTESCIdEscuadra)

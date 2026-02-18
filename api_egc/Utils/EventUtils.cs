@@ -23,7 +23,7 @@ namespace api_egc.Utils
             cmd.Parameters.AddWithValue("@EVESoloComandantes", onlyCommanders ? 1 : 0); // Convertir bool a bit
             cmd.Parameters.AddWithValue("@EVEHoraEntradaIntegrantes", membersEntry);
             cmd.Parameters.AddWithValue("@EVEUsuarioCreacion", userCreate);
-            cmd.Parameters.AddWithValue("@EVEFechaCreacion", DateTime.Now); // Fecha de creación automática
+            cmd.Parameters.AddWithValue("@EVEFechaCreacion", Utils.getCurrentDateGMT6()); // Fecha de creación automática
             cmd.Parameters.AddWithValue("@EVEBandaGeneral", generalBand ? 1 : 0);
             cmd.Parameters.AddWithValue("@EVEIdEstado", idEstado);
 
@@ -71,12 +71,10 @@ namespace api_egc.Utils
                 using (SqlCommand cmd = new("SP_GET_EVENTS_BY_ID_SQUAD", connection))
                 {
                     cmd.CommandType = CommandType.StoredProcedure;
-                    cmd.Parameters.Add("@EscuadraId", SqlDbType.BigInt).Value = idSquad;
+                    cmd.Parameters.Add("@EscuadraId", SqlDbType.BigInt).Value = idSquad == 11 ? 0 : idSquad;
                     cmd.Parameters.Add("@FechaInicio", SqlDbType.DateTime).Value = fechaInicio;
                     cmd.Parameters.Add("@FechaFin", SqlDbType.DateTime).Value = fechaFin;
                     cmd.Parameters.Add("@IdEstado", SqlDbType.Int).Value = idEstado;
-
-
 
                     using SqlDataReader reader = cmd.ExecuteReader();
 
@@ -96,7 +94,8 @@ namespace api_egc.Utils
                             EVEUsuarioModificacion = Utils.GetValueNull<string>(reader, "EVEUsuarioModificacion"),
                             EVEFechaModificacon = Utils.GetValueNull<DateTime>(reader, "EVEFechaModificacon"),
                             EVEBandaGeneral = Utils.GetValue<int>(reader, "EVEBandaGeneral"),
-                            EVEIdEstado = Utils.GetValue<int>(reader, "EVEIdEstado")
+                            EVEIdEstado = Utils.GetValue<int>(reader, "EVEIdEstado"),
+                            ListadoEscuadras = Utils.GetValueNull<string>(reader, "ListadoEscuadras")
                         };
                         list.Add(e);
                     }

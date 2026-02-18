@@ -1,7 +1,6 @@
 ﻿using api_egc.Models;
 using api_egc.Utils;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
 using System.Data.SqlClient;
 using System.Text.Json.Nodes;
 
@@ -74,7 +73,6 @@ namespace api_egc.Controllers
 
                 foreach(long i in  ids)
                 {
-                    _logger.LogInformation($"{i}");
                     EventUtils.EXEC_SP_INSERT_DETALLE_ASISTENCIA(connectionString, long.Parse(id.ToString()), i);
                 }
 
@@ -157,11 +155,11 @@ namespace api_egc.Controllers
             try
             {
                 // Definir las fechas para el mes actual
-                DateTime fechaInicio = DateTime.Now.Date;
-                DateTime fechaFin = DateTime.Now.Date;
+                DateTime fechaInicio = Utils.Utils.getCurrentDateGMT6();
+                DateTime fechaFin = Utils.Utils.getCurrentDateGMT6();
 
                 string connectionString = _configuration.GetConnectionString(ConfigController.CurrentEnvironment)!;
-                List<Event> list = EventUtils.EXEC_SP_GET_EVENTS_BY_ID_SQUAD(connectionString, idEscuadra, fechaInicio, fechaFin, 1);
+                List<Event> list = EventUtils.EXEC_SP_GET_EVENTS_BY_ID_SQUAD(connectionString, idEscuadra, fechaInicio.Date, fechaFin.Date, 1);
 
                 return Ok(new
                 {

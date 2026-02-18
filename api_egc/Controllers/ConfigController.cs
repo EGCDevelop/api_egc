@@ -8,8 +8,8 @@ namespace api_egc.Controllers
     public class ConfigController(ILogger<ConfigController> logger) : Controller
     {
         private readonly ILogger<ConfigController> _logger = logger;
-        //public static string CurrentEnvironment = "DbEgcConnection";
-        public static string CurrentEnvironment = "DbEgcConnectionTest";
+        public static string CurrentEnvironment = "DbEgcConnection";
+        //public static string CurrentEnvironment = "DbEgcConnectionTest";
 
         [HttpGet]
         [Route("get_ping")]

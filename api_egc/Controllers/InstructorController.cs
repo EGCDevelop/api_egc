@@ -88,14 +88,21 @@ namespace api_egc.Controllers
 
         [HttpGet]
         [Route("get_instructor")]
-        public IActionResult GetInstructor([FromQuery] string? like, [FromQuery] int state, [FromQuery] int puesto)
+        public IActionResult GetInstructor([FromQuery] string? like, [FromQuery] int state, [FromQuery] int puesto,
+            [FromQuery] int usuarioId)
         {
             try
             {
                 string connectionString = _configuration.GetConnectionString(ConfigController.CurrentEnvironment)!;
                 string search = string.IsNullOrWhiteSpace(like) ? "%" : like.ToLower();
 
-                List<Instructor> list = InstructorUtils.EXEC_SP_GET_INSTRUCTORS_BY_FILTERS(connectionString, state, puesto, search);
+                _logger.LogInformation($"search = {search}");
+                _logger.LogInformation($"state = {state}");
+                _logger.LogInformation($"puesto = {puesto}");
+                _logger.LogInformation($"usuarioId = {usuarioId}");
+
+
+                List<Instructor> list = InstructorUtils.EXEC_SP_GET_INSTRUCTORS_BY_FILTERS(connectionString, state, puesto, search, usuarioId);
 
                 return Ok(new
                 {

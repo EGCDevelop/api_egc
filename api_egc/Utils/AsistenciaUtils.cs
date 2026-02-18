@@ -1,6 +1,6 @@
-﻿using System.Data;
+﻿using api_egc.Models;
+using System.Data;
 using System.Data.SqlClient;
-using api_egc.Models;
 
 namespace api_egc.Utils
 {
@@ -54,7 +54,7 @@ namespace api_egc.Utils
 
         public static void EXEC_SP_INSERT_ASISTENCIA(string connectionString, long id, long eventId, long idRegister)
         {
-            DateTime date = DateTime.Now;
+            DateTime date = Utils.getCurrentDateGMT6();
 
             using (SqlConnection connection = new(connectionString))
             {
@@ -75,9 +75,9 @@ namespace api_egc.Utils
             }
         }
 
-        public static bool EXEC_SP_GET_ASISTENCIA_BY_INTEGRANTE(string connectionString, long id)
+        public static bool EXEC_SP_GET_ASISTENCIA_BY_INTEGRANTE(string connectionString, long id, long eventId)
         {
-            DateTime date = DateTime.Now.Date; // Esto elimina la parte de la hora
+            DateTime date = Utils.getCurrentDateGMT6();
             using SqlConnection connection = new(connectionString);
             connection.Open();
 
@@ -85,6 +85,7 @@ namespace api_egc.Utils
             cmd.CommandType = CommandType.StoredProcedure;
             cmd.Parameters.Add("@Id", SqlDbType.BigInt).Value = id;
             cmd.Parameters.Add("@Fecha", SqlDbType.DateTime).Value = date;
+            cmd.Parameters.Add("@eventId", SqlDbType.BigInt).Value = eventId;
 
             // Ejecutar el procedimiento y obtener el resultado
             object result = cmd.ExecuteScalar();

@@ -50,5 +50,12 @@ namespace api_egc.Utils
             return $"{firstInitial}{firstLastName}{secondLastNameInitial}";
         }
 
+        public static DateTime getCurrentDateGMT6()
+        {
+            DateTime utcNow = DateTime.UtcNow;
+            TimeZoneInfo myZone = TimeZoneInfo.FindSystemTimeZoneById("Central Standard Time");
+            return TimeZoneInfo.ConvertTimeFromUtc(utcNow, myZone);
+        }
+
     }
 }

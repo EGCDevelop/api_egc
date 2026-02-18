@@ -138,7 +138,7 @@ namespace api_egc.Utils
         }
 
         public static List<Instructor> EXEC_SP_GET_INSTRUCTORS_BY_FILTERS(string connectionString, int state, 
-            int puesto, string like)
+            int puesto, string like, int usuarioId)
         {
             List<Instructor> dataList = [];
 
@@ -152,6 +152,7 @@ namespace api_egc.Utils
                 cmd.Parameters.Add("@Like", SqlDbType.NVarChar, 100).Value = string.IsNullOrEmpty(like) ? DBNull.Value : like;
                 cmd.Parameters.Add("@state", SqlDbType.Int).Value = state;
                 cmd.Parameters.Add("@puesto", SqlDbType.Int).Value = puesto;
+                cmd.Parameters.Add("@UsuarioId", SqlDbType.Int).Value = usuarioId;
 
                 using SqlDataReader reader = cmd.ExecuteReader();
 
