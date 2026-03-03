@@ -53,7 +53,9 @@ namespace api_egc.Utils
                             INTEstadoIntegrante = Utils.GetValue<int>(reader, "INTEstadoIntegrante"),
                             INTPUIdPuesto = Utils.GetValue<long>(reader, "INTPUIdPuesto"),
                             PUNombre = Utils.GetValue<string>(reader, "PUNombre"),
-                            INTUsuario = Utils.GetValueNull<string>(reader, "INTUsuario")
+                            INTUsuario = Utils.GetValueNull<string>(reader, "INTUsuario"),
+                            ComplicacionMedica = Utils.GetValueNull<byte>(reader, "INTComplicacionMedica"),
+                            DescripcionComplicacionMedica = Utils.GetValueNull<string>(reader, "INTDescripcionComplicacionMedica")
                         };
 
                         list.Add(member);
