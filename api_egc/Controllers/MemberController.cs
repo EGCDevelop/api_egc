@@ -124,10 +124,12 @@ namespace api_egc.Controllers
                 {
                     username = json["username"]!.ToString();
                 }
+                byte complicacionMedica = byte.Parse(json["complicacionMedica"]!.ToString());
+                string? descripcionComplicacionMedica = json["descripcionComplicacionMedica"]?.ToString();
 
                 MemberUtils.EXEC_SP_UPDATE_MEMBER(connectionString, id, firstName, lastName, cellPhone, squadId, positionId,
                     isActive, isAncient, establecimientoId, anotherEstablishment, courseId, courseName, degreeId, section,
-                    fatherName, fatherCell, age, username, password);
+                    fatherName, fatherCell, age, username, password, complicacionMedica, descripcionComplicacionMedica);
 
                 GeneralMethodsUtils.EXEC_SP_UPDATE_MEMBER_PER_YEAR(connectionString, id, squadId, positionId);
 
@@ -177,10 +179,13 @@ namespace api_egc.Controllers
                 string? fatherName = json["fatherName"]?.ToString();
                 string? fatherCell = json["fatherCell"]?.ToString();
                 string? username = json["username"]?.ToString();
+                byte complicacionMedica = byte.Parse(json["complicacionMedica"]!.ToString());
+                string? descripcionComplicacionMedica = json["descripcionComplicacionMedica"]?.ToString();
 
                 MemberUtils.EXEC_SP_INSERT_MEMBER(connectionString, firstName, lastName, age, cellPhone,
-                    establecimientoId, anotherEstablishment, courseId, courseName, degreeId, degreeName,
-                    section, squadId, positionId, isAncient, fatherName, fatherCell, isActive, username);
+                    establecimientoId, complicacionMedica, anotherEstablishment, courseId, courseName, degreeId, degreeName,
+                    section, squadId, positionId, isAncient, fatherName, fatherCell, isActive, username,
+                    descripcionComplicacionMedica);
 
                 List<IntegrantePerYearDto> list = GeneralMethodsUtils.EXEC_SP_GET_BY_INSERT_PER_YEAR(connectionString);
 

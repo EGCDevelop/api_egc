@@ -29,5 +29,7 @@
         public required int EVEIdEstado { get; set; }
 
         public string? ListadoEscuadras { get; set; }
+
+        public int? EVEActivo { get; set; }
     }
 }

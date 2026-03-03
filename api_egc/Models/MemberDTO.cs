@@ -49,5 +49,9 @@
         public required string PUNombre { get; set; }
 
         public string? INTUsuario { get; set; }
+
+        public byte? ComplicacionMedica { get; set; }
+
+        public string? DescripcionComplicacionMedica { get; set; }
     }
 }

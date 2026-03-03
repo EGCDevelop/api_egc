@@ -113,7 +113,9 @@ namespace api_egc.Utils
                         INTEstadoIntegrante = Utils.GetValue<int>(reader, "INTEstadoIntegrante"),
                         INTPUIdPuesto = Utils.GetValue<long>(reader, "INTPUIdPuesto"),
                         PUNombre = Utils.GetValue<string>(reader, "PUNombre"),
-                        INTUsuario = Utils.GetValue<string>(reader, "INTUsuario")
+                        INTUsuario = Utils.GetValue<string>(reader, "INTUsuario"),
+                        ComplicacionMedica = Utils.GetValueNull<byte>(reader, "ComplicacionMedica"),
+                        DescripcionComplicacionMedica = Utils.GetValueNull<string>(reader, "DescripcionComplicacionMedica")
                     };
 
                     list.Add(member);
@@ -126,7 +128,7 @@ namespace api_egc.Utils
         public static void EXEC_SP_UPDATE_MEMBER(string connectionString, long id, string firstName, string lastName, string cellPhone,
             long squadId, long positionId, long isActive, long isAncient, long establecimientoId, string anotherEstablishment,
             long courseId, string courseName, long degreeId, string section, string fatherName, string fatherCell,
-            int age, string username, string password)
+            int age, string username, string password, byte complicacionMedica, string? descripcionComplicacionMedica)
         {
             using SqlConnection connection = new(connectionString);
             connection.Open();
@@ -154,15 +156,18 @@ namespace api_egc.Utils
             cmd.Parameters.Add("@INTTelefonoEncargado", SqlDbType.VarChar).Value = fatherCell;
             cmd.Parameters.Add("@Username", SqlDbType.VarChar, 50).Value = String.IsNullOrEmpty(username) ? DBNull.Value : username;
             cmd.Parameters.Add("@Password", SqlDbType.NVarChar, 500).Value = String.IsNullOrEmpty(password) ? DBNull.Value : password;
+            cmd.Parameters.Add("@complicacionMedica", SqlDbType.TinyInt).Value = complicacionMedica;
+            cmd.Parameters.Add("@descripcionComplicacionMedica", SqlDbType.NVarChar, 1000).Value = (object?)descripcionComplicacionMedica ?? DBNull.Value;
 
             // Ejecutar el procedimiento
             cmd.ExecuteNonQuery();
         }
 
         public static void EXEC_SP_INSERT_MEMBER(string connectionString, string firstName, string lastName, int years,
-            string cellPhone, long establecimientoId, string? anotherEstablishment, long courseId, string? courseName,
+            string cellPhone, long establecimientoId, byte complicacionMedica, string? anotherEstablishment, long courseId, string? courseName,
             long degreeId, string? degreeName, string section, long squadId, long positionId,
-            bool isAncient, string? fatherName, string? fatherCell, bool isActive, string? username)
+            bool isAncient, string? fatherName, string? fatherCell, bool isActive, string? username,
+            string? descripcionComplicacionMedica)
         {
             using SqlConnection connection = new(connectionString);
             connection.Open();
@@ -194,6 +199,8 @@ namespace api_egc.Utils
             cmd.Parameters.Add("@INTEstadoIntegrante", SqlDbType.Bit).Value = isActive;
             cmd.Parameters.Add("@INTPUIdPuesto", SqlDbType.BigInt).Value = positionId;
             cmd.Parameters.Add("@INTUsuario", SqlDbType.VarChar).Value = (object?)username ?? DBNull.Value;
+            cmd.Parameters.Add("@complicacionMedica", SqlDbType.TinyInt).Value = complicacionMedica;
+            cmd.Parameters.Add("@descripcionComplicacionMedica", SqlDbType.NVarChar, 1000).Value = (object?)descripcionComplicacionMedica ?? DBNull.Value;
 
             cmd.ExecuteNonQuery();
         }

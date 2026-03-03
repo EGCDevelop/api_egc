@@ -127,6 +127,9 @@ namespace api_egc.Utils
                             ASIEsExtraordinaria = Utils.GetValue<int>(reader, "ASIEsExtraordinaria"),
                             ASIComentario = Utils.GetValueNull<string>(reader, "ASIComentario"),
                             ASIFechaRegistroExtraordinaria = Utils.GetValueNull<DateTime?>(reader, "ASIFechaRegistroExtraordinaria"),
+                            ASIFechaSalida = Utils.GetValueNull<DateTime?>(reader, "ASIFechaSalida"),
+                            ASIUsuarioSalida = Utils.GetValueNull<string>(reader, "ASIUsuarioSalida"),
+                            ASIComentarioSalida = Utils.GetValueNull<string>(reader, "ASIComentarioSalida"),
                         };
 
                         list.Add(asistencia);
@@ -152,6 +155,30 @@ namespace api_egc.Utils
 
             // Si `result` es 1, el evento existe; si es 0, no existe
             return result != null && Convert.ToInt32(result) == 1;
+        }
+
+        public static void EXEC_SP_UPDATE_REGISTER_EXTRAORDINARY_DEPARTURE(string connectionString, string exitComment, long memberId,
+            long eventId, DateTime exitDate, string username)
+        {
+            DateTime date = Utils.getCurrentDateGMT6();
+
+            using (SqlConnection connection = new(connectionString))
+            {
+                connection.Open();
+
+                using (SqlCommand cmd = new("SP_UPDATE_REGISTER_EXTRAORDINARY_DEPARTURE", connection))
+                {
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.Parameters.Add("@exitComment", SqlDbType.NVarChar, 1000).Value = exitComment;
+                    cmd.Parameters.Add("@memberId", SqlDbType.BigInt).Value = memberId;
+                    cmd.Parameters.Add("@eventId", SqlDbType.BigInt).Value = eventId;
+                    cmd.Parameters.Add("@exitDate", SqlDbType.DateTime).Value = exitDate;
+                    cmd.Parameters.Add("@username", SqlDbType.NVarChar, 50).Value = username;
+
+                    // Ejecutar el procedimiento
+                    cmd.ExecuteNonQuery();
+                }
+            }
         }
     }
 }

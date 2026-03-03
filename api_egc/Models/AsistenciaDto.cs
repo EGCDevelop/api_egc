@@ -24,7 +24,30 @@
 
         public DateTime? ASIFechaRegistroExtraordinaria { get; set; }
 
+        public DateTime? ASIFechaSalida { get; set; }
 
+        public string? ASIUsuarioSalida { get; set; }
+
+        public string? ASIComentarioSalida { get; set; }
+
+        public override string ToString()
+        {
+            return $@"AsistenciaDto Details:
+                ---------------------------------
+                Integrante: {INTIdIntegrante} - {INTNombres} {INTApellidos}
+                ID Asistencia: {ASIIdAsistencia?.ToString() ?? "N/A"}
+                Fecha Asistencia: {ASIFechaAsistencia?.ToString("yyyy-MM-dd HH:mm:ss") ?? "Sin registro"}
+                Estado Asistencia: {(Asistencia == 1 ? "Presente" : "Ausente")}
+                Evento ID: {ASIEVEId}
+                Registrado por: {ASIINTIdIntegranteRegistro}
+                Es Extraordinaria: {(ASIEsExtraordinaria == 1 ? "Sí" : "No")}
+                Comentario: {ASIComentario ?? "Sin comentarios"}
+                Registro Extraord: {ASIFechaRegistroExtraordinaria?.ToString() ?? "N/A"}
+                ---------------------------------
+                Salida: {ASIFechaSalida?.ToString() ?? "Sin salida"}
+                Usuario Salida: {ASIUsuarioSalida ?? "N/A"}
+                Comentario Salida: {ASIComentarioSalida ?? "N/A"}";
+        }
 
     }
 }

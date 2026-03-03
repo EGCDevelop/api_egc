@@ -95,7 +95,8 @@ namespace api_egc.Utils
                             EVEFechaModificacon = Utils.GetValueNull<DateTime>(reader, "EVEFechaModificacon"),
                             EVEBandaGeneral = Utils.GetValue<int>(reader, "EVEBandaGeneral"),
                             EVEIdEstado = Utils.GetValue<int>(reader, "EVEIdEstado"),
-                            ListadoEscuadras = Utils.GetValueNull<string>(reader, "ListadoEscuadras")
+                            ListadoEscuadras = Utils.GetValueNull<string>(reader, "ListadoEscuadras"),
+                            EVEActivo = Utils.GetValueNull<int>(reader, "EVEActivo"),
                         };
                         list.Add(e);
                     }
@@ -165,6 +166,55 @@ namespace api_egc.Utils
                 }
             }
             return list;
+        }
+
+        public static void TRANSACTION_END_EVENT(string connectionString, int eventId, string username, 
+            DateTime endDate, string commentExit)
+        {
+            using SqlConnection connection = new(connectionString);
+            connection.Open();
+
+            using SqlTransaction transaction = connection.BeginTransaction();
+
+            try
+            {
+                EXEC_SP_UPDATE_END_EVENTO(connection, transaction, eventId, endDate, username);
+                EXEC_SP_UPDATE_END_ATTENDANCE(connection, transaction, eventId, endDate, username, commentExit);
+                transaction.Commit();
+            }
+            catch (Exception ex)
+            {
+                transaction.Rollback();
+                throw new Exception("Fallo en la actualización integral del instructor: " + ex.Message);
+            }
+
+        }
+
+        public static void EXEC_SP_UPDATE_END_EVENTO(SqlConnection connection, SqlTransaction transaction,
+            long eventId, DateTime endDate, string username)
+        {
+            using SqlCommand cmd = new("SP_UPDATE_END_EVENTO", connection, transaction);
+            cmd.CommandType = CommandType.StoredProcedure;
+
+            cmd.Parameters.Add("@eventId", SqlDbType.BigInt).Value = eventId;
+            cmd.Parameters.Add("@endDate", SqlDbType.DateTime).Value = endDate;
+            cmd.Parameters.Add("@username", SqlDbType.NVarChar, 50).Value = username;
+
+            cmd.ExecuteNonQuery();
+        }
+
+        public static void EXEC_SP_UPDATE_END_ATTENDANCE(SqlConnection connection, SqlTransaction transaction,
+            long eventId, DateTime endDate, string username, string commentExit)
+        {
+            using SqlCommand cmd = new("SP_UPDATE_END_ATTENDANCE", connection, transaction);
+            cmd.CommandType = CommandType.StoredProcedure;
+
+            cmd.Parameters.Add("@eventId", SqlDbType.BigInt).Value = eventId;
+            cmd.Parameters.Add("@endDate", SqlDbType.DateTime).Value = endDate;
+            cmd.Parameters.Add("@username", SqlDbType.NVarChar, 50).Value = username;
+            cmd.Parameters.Add("@commentExit", SqlDbType.NVarChar, 1000).Value = commentExit;
+
+            cmd.ExecuteNonQuery();
         }
     }
 }

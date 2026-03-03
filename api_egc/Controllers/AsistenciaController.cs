@@ -1,8 +1,10 @@
-﻿using System.Text.Json.Nodes;
-using api_egc.Models;
+﻿using api_egc.Models;
 using api_egc.Utils;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
+using System.Data.SqlClient;
+using System.Text.Json.Nodes;
 
 namespace api_egc.Controllers
 {
@@ -98,8 +100,6 @@ namespace api_egc.Controllers
 
                 bool exist = AsistenciaUtils.EXEC_SP_VALIDATE_EVENT_EXIST(connectionString, idEscuadra, eventId);
 
-                _logger.LogInformation($"exist == {exist}");
-
                 if (!exist)
                 {
                     return Ok(new
@@ -123,6 +123,45 @@ namespace api_egc.Controllers
             }
         }
 
+        [HttpPut]
+        [Route("register_extraordinary_departure")]
+        public IActionResult RegisterExtraordinaryDeparture([FromBody] JsonObject json)
+        {
+            try
+            {
+                string connectionString = _configuration.GetConnectionString(ConfigController.CurrentEnvironment)!;
+                string exitComment = json["exitComment"]!.ToString();
+                long memberId = long.Parse(json["memberId"]!.ToString());
+                long eventId = long.Parse(json["eventId"]!.ToString());
+                DateTime exitDate = Utils.Utils.getCurrentDateGMT6();
+                string username = json["username"]!.ToString();
 
+                
+
+                _logger.LogInformation($"exitComment = {exitComment}");
+                _logger.LogInformation($"memberId = {memberId}");
+                _logger.LogInformation($"exitDate = {exitDate}");
+                _logger.LogInformation($"username = {username}");
+                _logger.LogInformation($"username = {eventId}");
+
+                AsistenciaUtils.EXEC_SP_UPDATE_REGISTER_EXTRAORDINARY_DEPARTURE(connectionString, exitComment, memberId,
+                    eventId, exitDate, username);
+
+                return Ok(new
+                {
+                    ok = true,
+                    message = $"Salida registrada exitosamente"
+                });
+
+            }
+            catch (SqlException ex)
+            {
+                return StatusCode(500, new { message = $"Error SQL {ex}" });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = $"Error al crear evento {ex}" });
+            }
+        }
     }
 }

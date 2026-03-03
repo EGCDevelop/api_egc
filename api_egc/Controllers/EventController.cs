@@ -1,6 +1,7 @@
 ﻿using api_egc.Models;
 using api_egc.Utils;
 using Microsoft.AspNetCore.Mvc;
+using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Text.Json.Nodes;
 
@@ -215,6 +216,35 @@ namespace api_egc.Controllers
                 {
                     ok = true,
                     list
+                });
+            }
+            catch (SqlException sqlEx)
+            {
+                return StatusCode(500, new { message = $"Error base de datos {sqlEx}" });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = $"Error de servidor {ex}" });
+            }
+        }
+
+        [HttpPut]
+        [Route("end_event")]
+        public IActionResult EndEvent([FromBody] JsonObject json)
+        {
+            try
+            {
+                string connectionString = _configuration.GetConnectionString(ConfigController.CurrentEnvironment)!;
+                int eventId = int.Parse(json["eventId"]!.ToString());
+                string username = json["username"]!.ToString();
+                DateTime endDate = Utils.Utils.getCurrentDateGMT6();
+                string commentExit = "Evento finalizado";
+
+                EventUtils.TRANSACTION_END_EVENT(connectionString, eventId, username, endDate, commentExit);
+
+                return Ok(new
+                {
+                    ok = true,
                 });
             }
             catch (SqlException sqlEx)
