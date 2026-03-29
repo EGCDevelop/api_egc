@@ -55,7 +55,10 @@ namespace api_egc.Utils
                             PUNombre = Utils.GetValue<string>(reader, "PUNombre"),
                             INTUsuario = Utils.GetValueNull<string>(reader, "INTUsuario"),
                             ComplicacionMedica = Utils.GetValueNull<byte>(reader, "INTComplicacionMedica"),
-                            DescripcionComplicacionMedica = Utils.GetValueNull<string>(reader, "INTDescripcionComplicacionMedica")
+                            DescripcionComplicacionMedica = Utils.GetValueNull<string>(reader, "INTDescripcionComplicacionMedica"),
+                            PerteneceALinea = Utils.GetValue<byte>(reader, "PerteneceALinea"),
+                            TipoLinea = Utils.GetValueNull<byte>(reader, "TipoLinea"),
+                            EncargadoLinea = Utils.GetValueNull<byte>(reader, "EncargadoLinea")
                         };
 
                         list.Add(member);
@@ -117,7 +120,10 @@ namespace api_egc.Utils
                         PUNombre = Utils.GetValue<string>(reader, "PUNombre"),
                         INTUsuario = Utils.GetValue<string>(reader, "INTUsuario"),
                         ComplicacionMedica = Utils.GetValueNull<byte>(reader, "ComplicacionMedica"),
-                        DescripcionComplicacionMedica = Utils.GetValueNull<string>(reader, "DescripcionComplicacionMedica")
+                        DescripcionComplicacionMedica = Utils.GetValueNull<string>(reader, "DescripcionComplicacionMedica"),
+                        PerteneceALinea = Utils.GetValue<byte>(reader, "PerteneceALinea"),
+                        TipoLinea = Utils.GetValueNull<byte>(reader, "TipoLinea"),
+                        EncargadoLinea = Utils.GetValueNull<byte>(reader, "EncargadoLinea")
                     };
 
                     list.Add(member);
@@ -130,7 +136,8 @@ namespace api_egc.Utils
         public static void EXEC_SP_UPDATE_MEMBER(string connectionString, long id, string firstName, string lastName, string cellPhone,
             long squadId, long positionId, long isActive, long isAncient, long establecimientoId, string anotherEstablishment,
             long courseId, string courseName, long degreeId, string section, string fatherName, string fatherCell,
-            int age, string username, string password, byte complicacionMedica, string? descripcionComplicacionMedica)
+            int age, string username, string password, byte complicacionMedica,
+            int perteneceALinea, int tipoLinea, int encargadoLinea, string? descripcionComplicacionMedica)
         {
             using SqlConnection connection = new(connectionString);
             connection.Open();
@@ -160,6 +167,11 @@ namespace api_egc.Utils
             cmd.Parameters.Add("@Password", SqlDbType.NVarChar, 500).Value = String.IsNullOrEmpty(password) ? DBNull.Value : password;
             cmd.Parameters.Add("@complicacionMedica", SqlDbType.TinyInt).Value = complicacionMedica;
             cmd.Parameters.Add("@descripcionComplicacionMedica", SqlDbType.NVarChar, 1000).Value = (object?)descripcionComplicacionMedica ?? DBNull.Value;
+
+            cmd.Parameters.Add("@perteneceALinea", SqlDbType.Int).Value = perteneceALinea;
+            cmd.Parameters.Add("@tipoLinea", SqlDbType.Int).Value = perteneceALinea == 2 ? DBNull.Value : tipoLinea;
+            cmd.Parameters.Add("@encargadoLinea", SqlDbType.Int).Value = perteneceALinea == 2 ? DBNull.Value : encargadoLinea;
+
 
             // Ejecutar el procedimiento
             cmd.ExecuteNonQuery();
@@ -203,7 +215,7 @@ namespace api_egc.Utils
             cmd.Parameters.Add("@INTUsuario", SqlDbType.VarChar).Value = (object?)username ?? DBNull.Value;
             cmd.Parameters.Add("@complicacionMedica", SqlDbType.TinyInt).Value = complicacionMedica;
             cmd.Parameters.Add("@descripcionComplicacionMedica", SqlDbType.NVarChar, 1000).Value = (object?)descripcionComplicacionMedica ?? DBNull.Value;
-
+            
             cmd.ExecuteNonQuery();
         }
 

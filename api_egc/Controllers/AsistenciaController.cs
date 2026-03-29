@@ -2,7 +2,6 @@
 using api_egc.Utils;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
 using System.Data.SqlClient;
 using System.Text.Json.Nodes;
 
@@ -45,31 +44,47 @@ namespace api_egc.Controllers
                 long idRegistro = long.Parse(json["idRegistro"]!.ToString());
                 HashSet<long> generales = [1, 2, 3, 4];
 
-
                 bool asistencia = AsistenciaUtils.EXEC_SP_GET_ASISTENCIA_BY_INTEGRANTE(connectionString, idIntegrante, eventId);
-
-                _logger.LogInformation($"asistencia == {asistencia}");
-
-                if(asistencia)
+                
+                if (asistencia)
                 {
                     return Ok(new
                     {
                         ok = true,
-                        message = "Asistencia registrada exitosamente"
+                        message = "Integrante ya cuenta con asistencia"
                     });
                 }
-
+                
                 if (!generales.Contains(puestoComandante))
                 {
                     // Si no es un general procedemos a validar que el comandante y el integrante sean de la misma escuadra
                     IntegranteDto integrante = AsistenciaUtils.EXEC_SP_GET_INTEGRANTE_BY_ID(connectionString, idIntegrante);
+                    long escuadraIntegrante = integrante.INTESCIdEscuadra;
+                    bool esAutorizado = false;
 
-                    if(escuadraComandante != integrante.INTESCIdEscuadra)
+                    if (escuadraComandante == 2 || escuadraComandante == 13)
+                    {
+                        HashSet<long> permitidos = [2, 13, 15];
+                        if (permitidos.Contains(escuadraIntegrante)) esAutorizado = true;
+                    }
+
+                    else if (escuadraComandante == 1 || escuadraComandante == 12)
+                    {
+                        HashSet<long> permitidos = [1, 12, 14];
+                        if (permitidos.Contains(escuadraIntegrante)) esAutorizado = true;
+                    }
+
+                    else if (escuadraComandante == escuadraIntegrante)
+                    {
+                        esAutorizado = true;
+                    }
+
+                    if (!esAutorizado)
                     {
                         return BadRequest(new
                         {
                             ok = false,
-                            message = "El integrante no es de la misma escuadra"
+                            message = "El integrante no pertenece a una escuadra bajo su mando."
                         });
                     }
                 }
@@ -84,12 +99,13 @@ namespace api_egc.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new { message = $"Error al hacer login {ex}" });
+                return StatusCode(500, new { ok = false, message = $"Error al registrar asistencia: {ex.Message}" });
             }
         }
 
 
         [HttpGet]
+        [Authorize]
         [Route("get_asistencia")]
         public IActionResult GetAsistencia([FromQuery] long idEscuadra, [FromQuery] DateTime date, [FromQuery] long eventId)
         {
@@ -119,7 +135,29 @@ namespace api_egc.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new { message = $"Error al hacer login {ex}" });
+                return StatusCode(500, new { message = $"Error al obtener asistencia {ex.Message}" });
+            }
+        }
+
+        [HttpGet]
+        //[Authorize]
+        [Route("get_matriz_asistencia")]
+        public IActionResult GetMatrizAsistencia([FromQuery] long idEscuadra = 0, [FromQuery] int tipoIntegrante = 2, 
+            [FromQuery] int filtroPuesto = 0, [FromQuery] DateTime? fechaInicio = null)
+        {
+            try
+            {
+                string connectionString = _configuration.GetConnectionString(ConfigController.CurrentEnvironment)!;
+                DateTime fechaBusqueda = fechaInicio ?? new DateTime(2026, 1, 1);
+
+                var list = AsistenciaUtils.EXEC_SP_REPORTE_ASISTENCIA_MATRIZ(connectionString, idEscuadra, 
+                    tipoIntegrante, filtroPuesto, fechaBusqueda);
+
+                return Ok(new { ok = true, list });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = $"Error al obtener matriz: {ex.Message}" });
             }
         }
 
@@ -135,14 +173,6 @@ namespace api_egc.Controllers
                 long eventId = long.Parse(json["eventId"]!.ToString());
                 DateTime exitDate = Utils.Utils.getCurrentDateGMT6();
                 string username = json["username"]!.ToString();
-
-                
-
-                _logger.LogInformation($"exitComment = {exitComment}");
-                _logger.LogInformation($"memberId = {memberId}");
-                _logger.LogInformation($"exitDate = {exitDate}");
-                _logger.LogInformation($"username = {username}");
-                _logger.LogInformation($"username = {eventId}");
 
                 AsistenciaUtils.EXEC_SP_UPDATE_REGISTER_EXTRAORDINARY_DEPARTURE(connectionString, exitComment, memberId,
                     eventId, exitDate, username);

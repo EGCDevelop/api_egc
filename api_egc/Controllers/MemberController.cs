@@ -126,12 +126,17 @@ namespace api_egc.Controllers
                 }
                 byte complicacionMedica = byte.Parse(json["complicacionMedica"]!.ToString());
                 string? descripcionComplicacionMedica = json["descripcionComplicacionMedica"]?.ToString();
+                int perteneceALinea = int.Parse(json["perteneceALinea"]!.ToString());
+                int tipoLinea = int.Parse(json["tipoLinea"]!.ToString());
+                int encargadoLinea = int.Parse(json["encargadoLinea"]!.ToString());
 
                 MemberUtils.EXEC_SP_UPDATE_MEMBER(connectionString, id, firstName, lastName, cellPhone, squadId, positionId,
                     isActive, isAncient, establecimientoId, anotherEstablishment, courseId, courseName, degreeId, section,
-                    fatherName, fatherCell, age, username, password, complicacionMedica, descripcionComplicacionMedica);
+                    fatherName, fatherCell, age, username, password, complicacionMedica, 
+                    perteneceALinea, tipoLinea, encargadoLinea, descripcionComplicacionMedica);
 
-                GeneralMethodsUtils.EXEC_SP_UPDATE_MEMBER_PER_YEAR(connectionString, id, squadId, positionId);
+                GeneralMethodsUtils.EXEC_SP_UPDATE_MEMBER_PER_YEAR(connectionString, id, squadId, positionId,
+                    perteneceALinea, encargadoLinea);
 
                 return Ok(new
                 {

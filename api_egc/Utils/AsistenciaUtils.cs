@@ -1,6 +1,7 @@
 ﻿using api_egc.Models;
 using System.Data;
 using System.Data.SqlClient;
+using System.Dynamic;
 
 namespace api_egc.Utils
 {
@@ -75,6 +76,25 @@ namespace api_egc.Utils
             }
         }
 
+        //public static bool EXEC_SP_GET_ASISTENCIA_BY_INTEGRANTE(string connectionString, long id, long eventId)
+        //{
+        //    DateTime date = Utils.getCurrentDateGMT6();
+        //    using SqlConnection connection = new(connectionString);
+        //    connection.Open();
+
+        //    using SqlCommand cmd = new("SP_GET_ASISTENCIA_BY_INTEGRANTE", connection);
+        //    cmd.CommandType = CommandType.StoredProcedure;
+        //    cmd.Parameters.Add("@Id", SqlDbType.BigInt).Value = id;
+        //    cmd.Parameters.Add("@Fecha", SqlDbType.DateTime).Value = date;
+        //    cmd.Parameters.Add("@eventId", SqlDbType.BigInt).Value = eventId;
+
+        //    // Ejecutar el procedimiento y obtener el resultado
+        //    object result = cmd.ExecuteScalar();
+
+        //    // Si `result` no es null, significa que existe asistencia
+        //    return result != null;
+        //}
+
         public static bool EXEC_SP_GET_ASISTENCIA_BY_INTEGRANTE(string connectionString, long id, long eventId)
         {
             DateTime date = Utils.getCurrentDateGMT6();
@@ -87,11 +107,11 @@ namespace api_egc.Utils
             cmd.Parameters.Add("@Fecha", SqlDbType.DateTime).Value = date;
             cmd.Parameters.Add("@eventId", SqlDbType.BigInt).Value = eventId;
 
-            // Ejecutar el procedimiento y obtener el resultado
             object result = cmd.ExecuteScalar();
 
-            // Si `result` no es null, significa que existe asistencia
-            return result != null;
+            // Convertimos el resultado a booleano de forma segura
+            //return result != null && Convert.ToBoolean(result);
+            return result != null && Convert.ToBoolean(result);
         }
 
 
@@ -162,23 +182,56 @@ namespace api_egc.Utils
         {
             DateTime date = Utils.getCurrentDateGMT6();
 
-            using (SqlConnection connection = new(connectionString))
+            using SqlConnection connection = new(connectionString);
+            connection.Open();
+
+            using SqlCommand cmd = new("SP_UPDATE_REGISTER_EXTRAORDINARY_DEPARTURE", connection);
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.Parameters.Add("@exitComment", SqlDbType.NVarChar, 1000).Value = exitComment;
+            cmd.Parameters.Add("@memberId", SqlDbType.BigInt).Value = memberId;
+            cmd.Parameters.Add("@eventId", SqlDbType.BigInt).Value = eventId;
+            cmd.Parameters.Add("@exitDate", SqlDbType.DateTime).Value = exitDate;
+            cmd.Parameters.Add("@username", SqlDbType.NVarChar, 50).Value = username;
+
+            // Ejecutar el procedimiento
+            cmd.ExecuteNonQuery();
+        }
+
+        public static List<dynamic> EXEC_SP_REPORTE_ASISTENCIA_MATRIZ(string connectionString, long idEscuadra, int tipoIntegrante, 
+            int filtroPuesto, DateTime fechaInicio)
+        {
+            List<dynamic> list = [];
+
+            using SqlConnection connection = new(connectionString);
+            connection.Open();
+
+            using SqlCommand cmd = new("SP_GET_ATTENDANCE_REPORT_MATRIX", connection);
+            cmd.CommandType = CommandType.StoredProcedure;
+
+            cmd.Parameters.Add("@idEscuadra", SqlDbType.BigInt).Value = idEscuadra;
+            cmd.Parameters.Add("@tipoIntegrante", SqlDbType.Int).Value = tipoIntegrante;
+            cmd.Parameters.Add("@filtroPuesto", SqlDbType.Int).Value = filtroPuesto;
+            cmd.Parameters.Add("@fechaInicio", SqlDbType.DateTime).Value = fechaInicio;
+
+            using SqlDataReader reader = cmd.ExecuteReader();
+
+            while (reader.Read())
             {
-                connection.Open();
+                var row = new ExpandoObject() as IDictionary<string, object>;
 
-                using (SqlCommand cmd = new("SP_UPDATE_REGISTER_EXTRAORDINARY_DEPARTURE", connection))
+                for (int i = 0; i < reader.FieldCount; i++)
                 {
-                    cmd.CommandType = CommandType.StoredProcedure;
-                    cmd.Parameters.Add("@exitComment", SqlDbType.NVarChar, 1000).Value = exitComment;
-                    cmd.Parameters.Add("@memberId", SqlDbType.BigInt).Value = memberId;
-                    cmd.Parameters.Add("@eventId", SqlDbType.BigInt).Value = eventId;
-                    cmd.Parameters.Add("@exitDate", SqlDbType.DateTime).Value = exitDate;
-                    cmd.Parameters.Add("@username", SqlDbType.NVarChar, 50).Value = username;
+                    string columnName = reader.GetName(i);
+                    object value = reader.GetValue(i);
 
-                    // Ejecutar el procedimiento
-                    cmd.ExecuteNonQuery();
+                    // Agregamos cada columna (fija o dinámica) al diccionario
+                    row.Add(columnName, value == DBNull.Value ? null : value);
                 }
+
+                list.Add(row);
             }
+
+            return list;
         }
     }
 }

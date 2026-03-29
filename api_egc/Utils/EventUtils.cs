@@ -8,7 +8,7 @@ namespace api_egc.Utils
     {
         public static int EXEC_SP_INSERTAREVENTO(string connectionString, string title, string description, DateTime eventDate,
             TimeSpan commandersEntry, bool onlyCommanders, TimeSpan membersEntry, string userCreate, bool generalBand,
-            int idEstado)
+            int idEstado, int eventType)
         {
             using SqlConnection conn = new(connectionString);
             using SqlCommand cmd = new("sp_InsertarEvento", conn);
@@ -26,6 +26,7 @@ namespace api_egc.Utils
             cmd.Parameters.AddWithValue("@EVEFechaCreacion", Utils.getCurrentDateGMT6()); // Fecha de creación automática
             cmd.Parameters.AddWithValue("@EVEBandaGeneral", generalBand ? 1 : 0);
             cmd.Parameters.AddWithValue("@EVEIdEstado", idEstado);
+            cmd.Parameters.AddWithValue("@eventType", eventType);
 
             // parametro de salida
             SqlParameter outputParam = new("@InsertedId", SqlDbType.Int)
@@ -60,7 +61,7 @@ namespace api_egc.Utils
         }
 
         public static List<Event> EXEC_SP_GET_EVENTS_BY_ID_SQUAD(string connectionString, long idSquad, DateTime fechaInicio,
-            DateTime fechaFin, int idEstado )
+            DateTime fechaFin, int idEstado, int activo )
         {
             List<Event> list = [];
 
@@ -75,6 +76,7 @@ namespace api_egc.Utils
                     cmd.Parameters.Add("@FechaInicio", SqlDbType.DateTime).Value = fechaInicio;
                     cmd.Parameters.Add("@FechaFin", SqlDbType.DateTime).Value = fechaFin;
                     cmd.Parameters.Add("@IdEstado", SqlDbType.Int).Value = idEstado;
+                    cmd.Parameters.Add("@Activo", SqlDbType.Int).Value = activo;
 
                     using SqlDataReader reader = cmd.ExecuteReader();
 
@@ -97,6 +99,7 @@ namespace api_egc.Utils
                             EVEIdEstado = Utils.GetValue<int>(reader, "EVEIdEstado"),
                             ListadoEscuadras = Utils.GetValueNull<string>(reader, "ListadoEscuadras"),
                             EVEActivo = Utils.GetValueNull<int>(reader, "EVEActivo"),
+                            TipoIntegrantes = Utils.GetValueNull<int>(reader, "TipoIntegrantes")
                         };
                         list.Add(e);
                     }

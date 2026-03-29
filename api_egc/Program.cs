@@ -12,26 +12,26 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 // Configuramos CORS
-//builder.Services.AddCors(options =>
-//{
-//    options.AddPolicy("AllowAllOrigins", builder =>
-//    {
-//        builder.AllowAnyOrigin()
-//        .AllowAnyMethod()
-//        .AllowAnyHeader();
-//    });
-//});
-
-// para produccion
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowFrontend", builder =>
+    options.AddPolicy("AllowAllOrigins", builder =>
     {
-        builder.WithOrigins("https://bandaegc.com")
-               .AllowAnyMethod()
-               .AllowAnyHeader();
+        builder.AllowAnyOrigin()
+        .AllowAnyMethod()
+        .AllowAnyHeader();
     });
 });
+
+// para produccion
+//builder.Services.AddCors(options =>
+//{
+//    options.AddPolicy("AllowFrontend", builder =>
+//    {
+//        builder.WithOrigins("https://bandaegc.com")
+//               .AllowAnyMethod()
+//               .AllowAnyHeader();
+//    });
+//});
 
 // Configure JWT authentication
 var key = Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]!);
@@ -51,24 +51,25 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ClockSkew = TimeSpan.Zero // Esto elimina el margen de 5 minutos por defecto
         };
 
-        // Manejo de errores personalizados
         options.Events = new JwtBearerEvents
         {
-            OnAuthenticationFailed = context =>
+            OnAuthenticationFailed = async context =>
             {
+                context.Fail(context.Exception);
+
+                // 1. Configuramos la respuesta manual
                 context.Response.StatusCode = 401;
                 context.Response.ContentType = "application/json";
 
-                // Diferenciar si el error es por token expirado
                 string errorMessage = context.Exception is SecurityTokenExpiredException
                     ? "El token ha expirado. Por favor, inicia sesión nuevamente."
                     : "Token inválido. Verifica tu autenticación.";
 
-                return context.Response.WriteAsync(new
-                {
-                    ok = false,
-                    message = errorMessage
-                }.ToString());
+                var response = new { ok = false, message = errorMessage };
+
+                await context.Response.WriteAsJsonAsync(response);
+
+                await context.Response.CompleteAsync();
             }
         };
     });
@@ -85,15 +86,15 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 // Add Authentication and Authorization middleware
-app.UseAuthentication(); // <-- Este middleware es crucial para JWT
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
 
 // para dev
-//app.UseCors("AllowAllOrigins");
+app.UseCors("AllowAllOrigins");
 
 // para produccion
-app.UseCors("AllowFrontend");
+//app.UseCors("AllowFrontend");
 
 app.Run();

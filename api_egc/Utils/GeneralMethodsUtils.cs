@@ -190,7 +190,7 @@ namespace api_egc.Utils
             cmd.Parameters.Add("@IPAESCIdEscuadra", SqlDbType.BigInt).Value = IPAESCIdEscuadra;
             cmd.Parameters.Add("@IPAPUIdPuesto", SqlDbType.BigInt).Value = IPAPUIdPuesto;
             cmd.Parameters.Add("@IPAAnio", SqlDbType.SmallInt).Value = year;
-
+            
             // Ejecutar el procedimiento
             cmd.ExecuteNonQuery();
         }
@@ -224,7 +224,7 @@ namespace api_egc.Utils
         }
 
         public static void EXEC_SP_UPDATE_MEMBER_PER_YEAR(string connectionString, long memberId, long squadId,
-            long positionId)
+            long positionId, int perteneceALinea, int encargadoLinea)
         {
             int year = DateTime.Now.Year;
             using SqlConnection connection = new(connectionString);
@@ -237,6 +237,8 @@ namespace api_egc.Utils
             cmd.Parameters.Add("@squadId", SqlDbType.BigInt).Value = squadId;
             cmd.Parameters.Add("@positionId", SqlDbType.BigInt).Value = positionId;
             cmd.Parameters.Add("@year", SqlDbType.Int).Value = year;
+            cmd.Parameters.Add("@perteneceALinea", SqlDbType.Int).Value = perteneceALinea == 2 ? DBNull.Value : perteneceALinea;
+            cmd.Parameters.Add("@encargadoLinea", SqlDbType.Int).Value = perteneceALinea == 2 ? DBNull.Value : encargadoLinea;
 
             // Ejecutar el procedimiento
             cmd.ExecuteNonQuery();

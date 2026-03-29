@@ -1,7 +1,6 @@
 ﻿using api_egc.Models;
 using api_egc.Utils;
 using Microsoft.AspNetCore.Mvc;
-using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Text.Json.Nodes;
 
@@ -65,9 +64,10 @@ namespace api_egc.Controllers
 
                 bool onlyCommanders = json["onlyCommanders"]?.ToString() == "1";
                 bool genenalBand = json["generalBand"]?.ToString() == "1";
+                int eventType = int.Parse(json["eventType"]!.ToString());
 
                 int id = EventUtils.EXEC_SP_INSERTAREVENTO(connectionString, title, description, eventDate, commandersTimeSpan, onlyCommanders,
-                    membersTimeSpan, userCreate, genenalBand, 1);
+                    membersTimeSpan, userCreate, genenalBand, 1, eventType);
 
                 JsonArray squads = json["squads"]!.AsArray();
                 List<long> ids = squads.Select(n => long.Parse(n.ToString())).ToList();
@@ -95,16 +95,16 @@ namespace api_egc.Controllers
 
         [HttpGet]
         [Route("get_events")]
-        public IActionResult GetEvents([FromQuery] long idEscuadra)
+        public IActionResult GetEvents([FromQuery] long idEscuadra, [FromQuery] int activo)
         {
             try
             {
-                // Definir las fechas para el mes actual
-                DateTime fechaInicio = new(DateTime.Now.Year, DateTime.Now.Month, 1);
+                DateTime fechaInicio = new(DateTime.Now.Year, 1, 1);
                 DateTime fechaFin = fechaInicio.AddMonths(1).AddDays(-1);
 
                 string connectionString = _configuration.GetConnectionString(ConfigController.CurrentEnvironment)!;
-                List<Event> list = EventUtils.EXEC_SP_GET_EVENTS_BY_ID_SQUAD(connectionString, idEscuadra, fechaInicio, fechaFin, 1);
+                List<Event> list = EventUtils.EXEC_SP_GET_EVENTS_BY_ID_SQUAD(connectionString, idEscuadra, fechaInicio, 
+                    fechaFin, 1, activo);
 
                 return Ok(new
                 {
@@ -151,7 +151,7 @@ namespace api_egc.Controllers
 
         [HttpGet]
         [Route("get_events_by_squad")]
-        public IActionResult GetEventsBySquad([FromQuery] long idEscuadra)
+        public IActionResult GetEventsBySquad([FromQuery] long idEscuadra, [FromQuery] int activo)
         {
             try
             {
@@ -160,7 +160,8 @@ namespace api_egc.Controllers
                 DateTime fechaFin = Utils.Utils.getCurrentDateGMT6();
 
                 string connectionString = _configuration.GetConnectionString(ConfigController.CurrentEnvironment)!;
-                List<Event> list = EventUtils.EXEC_SP_GET_EVENTS_BY_ID_SQUAD(connectionString, idEscuadra, fechaInicio.Date, fechaFin.Date, 1);
+                List<Event> list = EventUtils.EXEC_SP_GET_EVENTS_BY_ID_SQUAD(connectionString, idEscuadra, fechaInicio.Date, 
+                    fechaFin.Date, 1, activo);
 
                 return Ok(new
                 {
@@ -180,13 +181,14 @@ namespace api_egc.Controllers
 
         [HttpGet]
         [Route("get_events_by_filters")]
-        public IActionResult GetEventsByFilters([FromQuery] long idEscuadra, [FromQuery] DateTime date)
+        public IActionResult GetEventsByFilters([FromQuery] long idEscuadra, [FromQuery] DateTime date,
+            [FromQuery] int activo)
         {
             try
             {
-
                 string connectionString = _configuration.GetConnectionString(ConfigController.CurrentEnvironment)!;
-                List<Event> list = EventUtils.EXEC_SP_GET_EVENTS_BY_ID_SQUAD(connectionString, idEscuadra, date.Date, date.Date, 1);
+                List<Event> list = EventUtils.EXEC_SP_GET_EVENTS_BY_ID_SQUAD(connectionString, idEscuadra, date.Date,
+                    date.Date, 1, activo);
 
                 return Ok(new
                 {

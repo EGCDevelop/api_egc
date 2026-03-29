@@ -53,5 +53,11 @@
         public byte? ComplicacionMedica { get; set; }
 
         public string? DescripcionComplicacionMedica { get; set; }
+
+        public required byte PerteneceALinea { get; set; }
+
+        public byte? TipoLinea { get; set; }
+
+        public byte? EncargadoLinea { get; set; }
     }
 }

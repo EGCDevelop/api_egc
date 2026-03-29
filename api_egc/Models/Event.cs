@@ -31,5 +31,7 @@
         public string? ListadoEscuadras { get; set; }
 
         public int? EVEActivo { get; set; }
+
+        public int TipoIntegrantes { get; set; }
     }
 }

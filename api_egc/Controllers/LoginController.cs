@@ -89,6 +89,7 @@ namespace api_egc.Controllers
                             new Claim("Role", member.INTPUIdPuesto.ToString())
                         }),
                         Expires = DateTime.UtcNow.AddHours(1),
+                        //Expires = DateTime.UtcNow.AddMinutes(1),
                         Issuer = _configuration["Jwt:Issuer"],
                         Audience = _configuration["Jwt:Audience"],
                         SigningCredentials = new SigningCredentials(

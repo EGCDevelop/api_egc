@@ -52,9 +52,10 @@ namespace api_egc.Utils
 
         public static DateTime getCurrentDateGMT6()
         {
-            DateTime utcNow = DateTime.UtcNow;
-            TimeZoneInfo myZone = TimeZoneInfo.FindSystemTimeZoneById("Central Standard Time");
-            return TimeZoneInfo.ConvertTimeFromUtc(utcNow, myZone);
+            //DateTime utcNow = DateTime.UtcNow;
+            //TimeZoneInfo myZone = TimeZoneInfo.FindSystemTimeZoneById("Central Standard Time");
+            //return TimeZoneInfo.ConvertTimeFromUtc(utcNow, myZone);
+            return DateTime.UtcNow.AddHours(-6);
         }
 
     }
