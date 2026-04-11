@@ -83,13 +83,16 @@ namespace api_egc.Controllers
                     message = $"Evento creado exitosamente {id}"
                 });
             }
-            catch (SqlException ex)
-            {
-                return StatusCode(500, new { message = $"Error SQL {ex}" });
-            }
             catch (Exception ex)
             {
-                return StatusCode(500, new { message = $"Error al crear evento {ex}" });
+                var fullMessage = ex.InnerException != null
+                                  ? $"{ex.Message} | Original: {ex.InnerException.Message}"
+                                  : ex.Message;
+
+                _logger.LogInformation($"fullMessage == {fullMessage}");
+                _logger.LogInformation($"StackTrace == {ex.StackTrace}");
+
+                return StatusCode(500, fullMessage);
             }
         }
 
@@ -112,13 +115,16 @@ namespace api_egc.Controllers
                     list
                 });
             }
-            catch (SqlException ex)
-            {
-                return StatusCode(500, new { message = $"Error SQL {ex}" });
-            }
             catch (Exception ex)
             {
-                return StatusCode(500, new { message = $"Error al crear evento {ex}" });
+                var fullMessage = ex.InnerException != null
+                                  ? $"{ex.Message} | Original: {ex.InnerException.Message}"
+                                  : ex.Message;
+
+                _logger.LogInformation($"fullMessage == {fullMessage}");
+                _logger.LogInformation($"StackTrace == {ex.StackTrace}");
+
+                return StatusCode(500, fullMessage);
             }
         }
 
@@ -139,13 +145,16 @@ namespace api_egc.Controllers
                     message = "Evento eliminado exitosamente."
                 });
             }
-            catch (SqlException ex)
-            {
-                return StatusCode(500, new { message = $"Error SQL {ex}" });
-            }
             catch (Exception ex)
             {
-                return StatusCode(500, new { message = $"Error al eliminar evento {ex}" });
+                var fullMessage = ex.InnerException != null
+                                  ? $"{ex.Message} | Original: {ex.InnerException.Message}"
+                                  : ex.Message;
+
+                _logger.LogInformation($"fullMessage == {fullMessage}");
+                _logger.LogInformation($"StackTrace == {ex.StackTrace}");
+
+                return StatusCode(500, fullMessage);
             }
         }
 
@@ -169,13 +178,16 @@ namespace api_egc.Controllers
                     list
                 });
             }
-            catch (SqlException ex)
-            {
-                return StatusCode(500, new { message = $"Error SQL {ex}" });
-            }
             catch (Exception ex)
             {
-                return StatusCode(500, new { message = $"Error al crear evento {ex}" });
+                var fullMessage = ex.InnerException != null
+                                  ? $"{ex.Message} | Original: {ex.InnerException.Message}"
+                                  : ex.Message;
+
+                _logger.LogInformation($"fullMessage == {fullMessage}");
+                _logger.LogInformation($"StackTrace == {ex.StackTrace}");
+
+                return StatusCode(500, fullMessage);
             }
         }
 
@@ -196,13 +208,16 @@ namespace api_egc.Controllers
                     list
                 });
             }
-            catch (SqlException ex)
-            {
-                return StatusCode(500, new { message = $"Error SQL {ex}" });
-            }
             catch (Exception ex)
             {
-                return StatusCode(500, new { message = $"Error al crear evento {ex}" });
+                var fullMessage = ex.InnerException != null
+                                  ? $"{ex.Message} | Original: {ex.InnerException.Message}"
+                                  : ex.Message;
+
+                _logger.LogInformation($"fullMessage == {fullMessage}");
+                _logger.LogInformation($"StackTrace == {ex.StackTrace}");
+
+                return StatusCode(500, fullMessage);
             }
         }
 
@@ -220,13 +235,16 @@ namespace api_egc.Controllers
                     list
                 });
             }
-            catch (SqlException sqlEx)
-            {
-                return StatusCode(500, new { message = $"Error base de datos {sqlEx}" });
-            }
             catch (Exception ex)
             {
-                return StatusCode(500, new { message = $"Error de servidor {ex}" });
+                var fullMessage = ex.InnerException != null
+                                  ? $"{ex.Message} | Original: {ex.InnerException.Message}"
+                                  : ex.Message;
+
+                _logger.LogInformation($"fullMessage == {fullMessage}");
+                _logger.LogInformation($"StackTrace == {ex.StackTrace}");
+
+                return StatusCode(500, fullMessage);
             }
         }
 
@@ -249,13 +267,16 @@ namespace api_egc.Controllers
                     ok = true,
                 });
             }
-            catch (SqlException sqlEx)
-            {
-                return StatusCode(500, new { message = $"Error base de datos {sqlEx}" });
-            }
             catch (Exception ex)
             {
-                return StatusCode(500, new { message = $"Error de servidor {ex}" });
+                var fullMessage = ex.InnerException != null
+                                  ? $"{ex.Message} | Original: {ex.InnerException.Message}"
+                                  : ex.Message;
+
+                _logger.LogInformation($"fullMessage == {fullMessage}");
+                _logger.LogInformation($"StackTrace == {ex.StackTrace}");
+
+                return StatusCode(500, fullMessage);
             }
         }
 

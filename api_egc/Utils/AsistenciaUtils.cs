@@ -150,6 +150,9 @@ namespace api_egc.Utils
                             ASIFechaSalida = Utils.GetValueNull<DateTime?>(reader, "ASIFechaSalida"),
                             ASIUsuarioSalida = Utils.GetValueNull<string>(reader, "ASIUsuarioSalida"),
                             ASIComentarioSalida = Utils.GetValueNull<string>(reader, "ASIComentarioSalida"),
+                            ASIJustificacionFalta = Utils.GetValueNull<string>(reader, "ASIJustificacionFalta"),
+                            ASITieneJustificacion = Utils.GetValueNull<byte>(reader, "ASITieneJustificacion"),
+                            ASIUsuarioRegistroJustificacion = Utils.GetValueNull<string>(reader, "ASIUsuarioRegistroJustificacion"),
                         };
 
                         list.Add(asistencia);
@@ -232,6 +235,27 @@ namespace api_egc.Utils
             }
 
             return list;
+        }
+
+        public static void EXEC_SP_UPDATE_REGISTER_JUSTIFICATION_ABSENCE(string connectionString, string justificationComment, 
+            long memberId, long eventId, long usernameId, string username)
+        {
+            DateTime date = Utils.getCurrentDateGMT6();
+
+            using SqlConnection connection = new(connectionString);
+            connection.Open();
+
+            using SqlCommand cmd = new("SP_UPDATE_REGISTER_JUSTIFICATION_ABSENCE", connection);
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.Parameters.Add("@justificationComment", SqlDbType.NVarChar, 2000).Value = justificationComment;
+            cmd.Parameters.Add("@memberId", SqlDbType.BigInt).Value = memberId;
+            cmd.Parameters.Add("@date", SqlDbType.DateTime).Value = date;
+            cmd.Parameters.Add("@eventId", SqlDbType.BigInt).Value = eventId;
+            cmd.Parameters.Add("@usernameId", SqlDbType.BigInt).Value = usernameId;
+            cmd.Parameters.Add("@username", SqlDbType.NVarChar, 50).Value = username;
+
+            // Ejecutar el procedimiento
+            cmd.ExecuteNonQuery();
         }
     }
 }

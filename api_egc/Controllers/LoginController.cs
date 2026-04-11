@@ -113,7 +113,8 @@ namespace api_egc.Controllers
                         member.INTESCIdEscuadra,
                         member.INTPUIdPuesto,
                         token = tokenHandler.WriteToken(token),
-                        username
+                        username,
+                        isMemeber = 1
                     });
                 }
                 // buscamos informacion del instructor
@@ -179,7 +180,8 @@ namespace api_egc.Controllers
                             token = tokenHandler.WriteToken(token),
                             rol = instructor.INSRol,
                             squadIdList,
-                            username
+                            username,
+                            isMemeber = 0
                         });
                     }
                 }

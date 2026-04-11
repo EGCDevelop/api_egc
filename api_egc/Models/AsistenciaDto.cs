@@ -30,6 +30,12 @@
 
         public string? ASIComentarioSalida { get; set; }
 
+        public string? ASIJustificacionFalta { get; set; }
+
+        public byte? ASITieneJustificacion { get; set; }
+
+        public string? ASIUsuarioRegistroJustificacion { get; set; }
+
         public override string ToString()
         {
             return $@"AsistenciaDto Details:
@@ -43,6 +49,9 @@
                 Es Extraordinaria: {(ASIEsExtraordinaria == 1 ? "Sí" : "No")}
                 Comentario: {ASIComentario ?? "Sin comentarios"}
                 Registro Extraord: {ASIFechaRegistroExtraordinaria?.ToString() ?? "N/A"}
+                ASIJustificacionFalta: {ASIJustificacionFalta?.ToString() ?? "N/A"}
+                ASITieneJustificacion: {ASITieneJustificacion?.ToString() ?? "N/A"}
+                ASIUsuarioRegistroJustificacion: {ASIUsuarioRegistroJustificacion?.ToString() ?? "N/A"}
                 ---------------------------------
                 Salida: {ASIFechaSalida?.ToString() ?? "Sin salida"}
                 Usuario Salida: {ASIUsuarioSalida ?? "N/A"}

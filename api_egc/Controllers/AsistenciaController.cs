@@ -36,7 +36,7 @@ namespace api_egc.Controllers
             {
                 //string connectionString = _configuration.GetConnectionString("DbEgcConnection")!;
                 string connectionString = _configuration.GetConnectionString(ConfigController.CurrentEnvironment)!;
-
+                
                 long idIntegrante = long.Parse(json["id"]!.ToString());
                 long escuadraComandante = long.Parse(json["escuadra"]!.ToString());
                 long puestoComandante = long.Parse(json["puesto"]!.ToString());
@@ -99,7 +99,14 @@ namespace api_egc.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new { ok = false, message = $"Error al registrar asistencia: {ex.Message}" });
+                var fullMessage = ex.InnerException != null
+                                  ? $"{ex.Message} | Original: {ex.InnerException.Message}"
+                                  : ex.Message;
+
+                _logger.LogInformation($"fullMessage == {fullMessage}");
+                _logger.LogInformation($"StackTrace == {ex.StackTrace}");
+
+                return StatusCode(500, fullMessage);
             }
         }
 
@@ -135,7 +142,14 @@ namespace api_egc.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new { message = $"Error al obtener asistencia {ex.Message}" });
+                var fullMessage = ex.InnerException != null
+                                  ? $"{ex.Message} | Original: {ex.InnerException.Message}"
+                                  : ex.Message;
+
+                _logger.LogInformation($"fullMessage == {fullMessage}");
+                _logger.LogInformation($"StackTrace == {ex.StackTrace}");
+
+                return StatusCode(500, fullMessage);
             }
         }
 
@@ -147,17 +161,34 @@ namespace api_egc.Controllers
         {
             try
             {
+                _logger.LogInformation("GetMatrizAsistencia...");
+
                 string connectionString = _configuration.GetConnectionString(ConfigController.CurrentEnvironment)!;
                 DateTime fechaBusqueda = fechaInicio ?? new DateTime(2026, 1, 1);
 
+                _logger.LogInformation("uno");
+                _logger.LogInformation($"idEscuadra = {idEscuadra}");
+                _logger.LogInformation($"tipoIntegrante = {tipoIntegrante}");
+                _logger.LogInformation($"filtroPuesto = {filtroPuesto}");
+                _logger.LogInformation($"fechaBusqueda = {fechaBusqueda}");
+
+
                 var list = AsistenciaUtils.EXEC_SP_REPORTE_ASISTENCIA_MATRIZ(connectionString, idEscuadra, 
                     tipoIntegrante, filtroPuesto, fechaBusqueda);
+                _logger.LogInformation("dos");
 
                 return Ok(new { ok = true, list });
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new { message = $"Error al obtener matriz: {ex.Message}" });
+                var fullMessage = ex.InnerException != null
+                                  ? $"{ex.Message} | Original: {ex.InnerException.Message}"
+                                  : ex.Message;
+
+                _logger.LogInformation($"fullMessage == {fullMessage}");
+                _logger.LogInformation($"StackTrace == {ex.StackTrace}");
+
+                return StatusCode(500, fullMessage);
             }
         }
 
@@ -184,13 +215,58 @@ namespace api_egc.Controllers
                 });
 
             }
-            catch (SqlException ex)
+            catch (Exception ex)
             {
-                return StatusCode(500, new { message = $"Error SQL {ex}" });
+                var fullMessage = ex.InnerException != null
+                                  ? $"{ex.Message} | Original: {ex.InnerException.Message}"
+                                  : ex.Message;
+
+                _logger.LogInformation($"fullMessage == {fullMessage}");
+                _logger.LogInformation($"StackTrace == {ex.StackTrace}");
+
+                return StatusCode(500, fullMessage);
+            }
+        }
+
+        [HttpPut]
+        [Route("register_justification_absence")]
+        public IActionResult RegisterJustificationAbsence([FromBody] JsonObject json)
+        {
+            try
+            {
+                string connectionString = _configuration.GetConnectionString(ConfigController.CurrentEnvironment)!;
+                string justificationComment = json["justificationComment"]!.ToString();
+                long memberId = long.Parse(json["memberId"]!.ToString());
+                long eventId = long.Parse(json["eventId"]!.ToString());
+                long usernameId = long.Parse(json["usernameId"]!.ToString());
+                string username = json["username"]!.ToString();
+
+                _logger.LogInformation($"justificationComment == {justificationComment}");
+                _logger.LogInformation($"memberId == {memberId}");
+                _logger.LogInformation($"eventId == {eventId}");
+                _logger.LogInformation($"usernameId == {usernameId}");
+                _logger.LogInformation($"username == {username}");
+
+                AsistenciaUtils.EXEC_SP_UPDATE_REGISTER_JUSTIFICATION_ABSENCE(connectionString, justificationComment, memberId,
+                    eventId, usernameId, username);
+
+                return Ok(new
+                {
+                    ok = true,
+                    message = $"¡Justificación registrada exitosamente!"
+                });
+
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new { message = $"Error al crear evento {ex}" });
+                var fullMessage = ex.InnerException != null
+                                  ? $"{ex.Message} | Original: {ex.InnerException.Message}"
+                                  : ex.Message;
+
+                _logger.LogInformation($"fullMessage == {fullMessage}");
+                _logger.LogInformation($"StackTrace == {ex.StackTrace}");
+
+                return StatusCode(500, fullMessage);
             }
         }
     }

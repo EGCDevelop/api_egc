@@ -41,15 +41,16 @@ namespace api_egc.Controllers
                     list
                 });
             }
-            catch (SqlException ex)
-            {
-                _logger.LogInformation($"ERROR == {ex.StackTrace}");
-                return StatusCode(500, new { ok = false,  message = $"Error SQL {ex}" });
-            }
             catch (Exception ex)
             {
-                _logger.LogInformation($"ERROR == {ex.StackTrace}");
-                return StatusCode(500, new { ok = false,  message = $"Error {ex}" });
+                var fullMessage = ex.InnerException != null
+                                  ? $"{ex.Message} | Original: {ex.InnerException.Message}"
+                                  : ex.Message;
+
+                _logger.LogInformation($"fullMessage == {fullMessage}");
+                _logger.LogInformation($"StackTrace == {ex.StackTrace}");
+
+                return StatusCode(500, fullMessage);
             }
         }
 
@@ -69,13 +70,16 @@ namespace api_egc.Controllers
                     list
                 });
             }
-            catch (SqlException ex)
-            {
-                return StatusCode(500, new { ok = false, message = $"Error SQL {ex}" });
-            }
             catch (Exception ex)
             {
-                return StatusCode(500, new { ok = false, message = $"Error {ex}" });
+                var fullMessage = ex.InnerException != null
+                                  ? $"{ex.Message} | Original: {ex.InnerException.Message}"
+                                  : ex.Message;
+
+                _logger.LogInformation($"fullMessage == {fullMessage}");
+                _logger.LogInformation($"StackTrace == {ex.StackTrace}");
+
+                return StatusCode(500, fullMessage);
             }
         }
 
@@ -94,13 +98,16 @@ namespace api_egc.Controllers
                     list
                 });
             }
-            catch (SqlException ex)
-            {
-                return StatusCode(500, new { ok = false, message = $"Error SQL {ex}" });
-            }
             catch (Exception ex)
             {
-                return StatusCode(500, new { ok = false, message = $"Error {ex}" });
+                var fullMessage = ex.InnerException != null
+                                  ? $"{ex.Message} | Original: {ex.InnerException.Message}"
+                                  : ex.Message;
+
+                _logger.LogInformation($"fullMessage == {fullMessage}");
+                _logger.LogInformation($"StackTrace == {ex.StackTrace}");
+
+                return StatusCode(500, fullMessage);
             }
         }
 
@@ -119,13 +126,16 @@ namespace api_egc.Controllers
                     list
                 });
             }
-            catch (SqlException ex)
-            {
-                return StatusCode(500, new { ok = false, message = $"Error SQL {ex}" });
-            }
             catch (Exception ex)
             {
-                return StatusCode(500, new { ok = false, message = $"Error {ex}" });
+                var fullMessage = ex.InnerException != null
+                                  ? $"{ex.Message} | Original: {ex.InnerException.Message}"
+                                  : ex.Message;
+
+                _logger.LogInformation($"fullMessage == {fullMessage}");
+                _logger.LogInformation($"StackTrace == {ex.StackTrace}");
+
+                return StatusCode(500, fullMessage);
             }
         }
 
@@ -145,13 +155,16 @@ namespace api_egc.Controllers
                     list
                 });
             }
-            catch (SqlException ex)
-            {
-                return StatusCode(500, new { ok = false, message = $"Error SQL {ex}" });
-            }
             catch (Exception ex)
             {
-                return StatusCode(500, new { ok = false, message = $"Error {ex}" });
+                var fullMessage = ex.InnerException != null
+                                  ? $"{ex.Message} | Original: {ex.InnerException.Message}"
+                                  : ex.Message;
+
+                _logger.LogInformation($"fullMessage == {fullMessage}");
+                _logger.LogInformation($"StackTrace == {ex.StackTrace}");
+
+                return StatusCode(500, fullMessage);
             }
         }
 
@@ -178,13 +191,16 @@ namespace api_egc.Controllers
                     message = "Integrantes por año insertados correctamente"
                 });
             }
-            catch (SqlException ex)
-            {
-                return StatusCode(500, new { ok = false, message = $"Error SQL {ex}" });
-            }
             catch (Exception ex)
             {
-                return StatusCode(500, new { ok = false, message = $"Error {ex}" });
+                var fullMessage = ex.InnerException != null
+                                  ? $"{ex.Message} | Original: {ex.InnerException.Message}"
+                                  : ex.Message;
+
+                _logger.LogInformation($"fullMessage == {fullMessage}");
+                _logger.LogInformation($"StackTrace == {ex.StackTrace}");
+
+                return StatusCode(500, fullMessage);
             }
         }
 
@@ -203,13 +219,16 @@ namespace api_egc.Controllers
                     list
                 });
             }
-            catch (SqlException ex)
-            {
-                return StatusCode(500, new { ok = false, message = $"Error SQL {ex}" });
-            }
             catch (Exception ex)
             {
-                return StatusCode(500, new { ok = false, message = $"Error {ex}" });
+                var fullMessage = ex.InnerException != null
+                                  ? $"{ex.Message} | Original: {ex.InnerException.Message}"
+                                  : ex.Message;
+
+                _logger.LogInformation($"fullMessage == {fullMessage}");
+                _logger.LogInformation($"StackTrace == {ex.StackTrace}");
+
+                return StatusCode(500, fullMessage);
             }
         }
     }

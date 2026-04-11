@@ -41,7 +41,14 @@ namespace api_egc.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new { message = $"{ex.StackTrace}" });
+                var fullMessage = ex.InnerException != null
+                                  ? $"{ex.Message} | Original: {ex.InnerException.Message}"
+                                  : ex.Message;
+
+                _logger.LogInformation($"fullMessage == {fullMessage}");
+                _logger.LogInformation($"StackTrace == {ex.StackTrace}");
+
+                return StatusCode(500, fullMessage);
             }
         }
 
@@ -68,7 +75,14 @@ namespace api_egc.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new { message = $"{ex.StackTrace}" });
+                var fullMessage = ex.InnerException != null
+                                  ? $"{ex.Message} | Original: {ex.InnerException.Message}"
+                                  : ex.Message;
+
+                _logger.LogInformation($"fullMessage == {fullMessage}");
+                _logger.LogInformation($"StackTrace == {ex.StackTrace}");
+
+                return StatusCode(500, fullMessage);
             }
         }
     }

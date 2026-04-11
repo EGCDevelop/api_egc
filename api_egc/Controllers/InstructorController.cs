@@ -40,13 +40,16 @@ namespace api_egc.Controllers
                     data
                 });
             }
-            catch (SqlException ex)
-            {
-                return StatusCode(500, new { ok = false, message = $"Error SQL {ex}" });
-            }
             catch (Exception ex)
             {
-                return StatusCode(500, new { ok = false, message = $"Error {ex}" });
+                var fullMessage = ex.InnerException != null
+                                  ? $"{ex.Message} | Original: {ex.InnerException.Message}"
+                                  : ex.Message;
+
+                _logger.LogInformation($"fullMessage == {fullMessage}");
+                _logger.LogInformation($"StackTrace == {ex.StackTrace}");
+
+                return StatusCode(500, fullMessage);
             }
         }
 
@@ -76,13 +79,16 @@ namespace api_egc.Controllers
                     correo = email
                 });
             }
-            catch (SqlException ex)
-            {
-                return StatusCode(500, new { ok = false, message = $"Error SQL {ex}" });
-            }
             catch (Exception ex)
             {
-                return StatusCode(500, new { ok = false, message = $"Error {ex}" });
+                var fullMessage = ex.InnerException != null
+                                  ? $"{ex.Message} | Original: {ex.InnerException.Message}"
+                                  : ex.Message;
+
+                _logger.LogInformation($"fullMessage == {fullMessage}");
+                _logger.LogInformation($"StackTrace == {ex.StackTrace}");
+
+                return StatusCode(500, fullMessage);
             }
         }
 
@@ -112,7 +118,14 @@ namespace api_egc.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new { message = $"Error al hacer login {ex}" });
+                var fullMessage = ex.InnerException != null
+                                  ? $"{ex.Message} | Original: {ex.InnerException.Message}"
+                                  : ex.Message;
+
+                _logger.LogInformation($"fullMessage == {fullMessage}");
+                _logger.LogInformation($"StackTrace == {ex.StackTrace}");
+
+                return StatusCode(500, fullMessage);
             }
         }
 
@@ -133,13 +146,16 @@ namespace api_egc.Controllers
                 });
 
             }
-            catch (SqlException ex)
-            {
-                return StatusCode(500, new { ok = false, message = $"Error SQL CreateInstructor {ex}" });
-            }
             catch (Exception ex)
             {
-                return StatusCode(500, new { ok = false, message = $"Error CreateInstructor {ex}" });
+                var fullMessage = ex.InnerException != null
+                                  ? $"{ex.Message} | Original: {ex.InnerException.Message}"
+                                  : ex.Message;
+
+                _logger.LogInformation($"fullMessage == {fullMessage}");
+                _logger.LogInformation($"StackTrace == {ex.StackTrace}");
+
+                return StatusCode(500, fullMessage);
             }
         }
 
@@ -160,13 +176,16 @@ namespace api_egc.Controllers
                     ok = true,
                 });
             }
-            catch (SqlException ex)
-            {
-                return StatusCode(500, new { ok = false, message = $"Error SQL UpdateInstructor {ex}" });
-            }
             catch (Exception ex)
             {
-                return StatusCode(500, new { ok = false, message = $"Error UpdateInstructor {ex}" });
+                var fullMessage = ex.InnerException != null
+                                  ? $"{ex.Message} | Original: {ex.InnerException.Message}"
+                                  : ex.Message;
+
+                _logger.LogInformation($"fullMessage == {fullMessage}");
+                _logger.LogInformation($"StackTrace == {ex.StackTrace}");
+
+                return StatusCode(500, fullMessage);
             }
         }
     }

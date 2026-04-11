@@ -10,6 +10,8 @@
 
         public required int Asistencias { get; set; }
 
+        public required int Permisos { get; set; }
+
         public required int Faltan { get; set; }
 
         public required long EventoId { get; set; }

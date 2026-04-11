@@ -31,6 +31,7 @@ namespace api_egc.Utils
                             ESCNombre = Utils.GetValue<string>(reader, "ESCNombre"),
                             TotalIntegrantes = Utils.GetValue<int>(reader, "TotalIntegrantes"),
                             Asistencias = Utils.GetValue<int>(reader, "Asistencias"),
+                            Permisos = Utils.GetValue<int>(reader, "Permisos"),
                             Faltan = Utils.GetValue<int>(reader, "Faltan"),
                             EventoId = Utils.GetValue<long>(reader, "EventoId"),
                             NombreEvento = Utils.GetValue<string>(reader, "NombreEvento"),

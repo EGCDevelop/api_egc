@@ -39,13 +39,16 @@ namespace api_egc.Controllers
                     list
                 });
             }
-            catch (SqlException ex)
-            {
-                return StatusCode(500, new { ok = false, message = $"Error SQL {ex}" });
-            }
             catch (Exception ex)
             {
-                return StatusCode(500, new { ok = false, message = $"Error {ex}" });
+                var fullMessage = ex.InnerException != null
+                                  ? $"{ex.Message} | Original: {ex.InnerException.Message}"
+                                  : ex.Message;
+
+                _logger.LogInformation($"fullMessage == {fullMessage}");
+                _logger.LogInformation($"StackTrace == {ex.StackTrace}");
+
+                return StatusCode(500, fullMessage);
             }
         }
     }
