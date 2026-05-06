@@ -1,7 +1,6 @@
 ﻿using api_egc.Models;
 using api_egc.Utils;
 using Microsoft.AspNetCore.Mvc;
-using System.Data.SqlClient;
 using System.Text.Json.Nodes;
 
 namespace api_egc.Controllers

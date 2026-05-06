@@ -51,7 +51,7 @@ namespace api_egc.Controllers
                 Versiones dbVersion = LoginUtils.EXEC_SP_VERSION_APP(connectionString);
 
                 // comparamos si las versiones son iguales
-                if (!version.Equals(dbVersion.VERNumero))
+                if (!version.Equals(dbVersion.VERNumero) && dbVersion.VERObligatoria == 1)
                 {
                     return BadRequest(new
                     {

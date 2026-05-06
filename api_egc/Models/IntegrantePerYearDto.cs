@@ -7,5 +7,7 @@
 		public long INTESCIdEscuadra {get; set;}
 
 		public long INTPUIdPuesto {get; set;}
+
+        public int INTCategoria {get; set;}
     }
 }

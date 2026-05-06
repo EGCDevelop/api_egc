@@ -59,5 +59,7 @@
         public byte? TipoLinea { get; set; }
 
         public byte? EncargadoLinea { get; set; }
+
+        public int Categoria { get; set; }
     }
 }

@@ -182,7 +182,7 @@ namespace api_egc.Controllers
                 foreach(IntegrantePerYearDto dto in list)
                 {
                     GeneralMethodsUtils.EXEC_SP_INSERT_MEMEBER_PER_YEAR(connectionString, dto.INTIdIntegrante,
-                        dto.INTESCIdEscuadra, dto.INTPUIdPuesto);
+                        dto.INTESCIdEscuadra, dto.INTPUIdPuesto, dto.INTCategoria);
                 }
 
                 return Ok(new

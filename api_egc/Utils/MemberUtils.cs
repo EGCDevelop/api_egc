@@ -58,7 +58,8 @@ namespace api_egc.Utils
                             DescripcionComplicacionMedica = Utils.GetValueNull<string>(reader, "INTDescripcionComplicacionMedica"),
                             PerteneceALinea = Utils.GetValue<byte>(reader, "PerteneceALinea"),
                             TipoLinea = Utils.GetValueNull<byte>(reader, "TipoLinea"),
-                            EncargadoLinea = Utils.GetValueNull<byte>(reader, "EncargadoLinea")
+                            EncargadoLinea = Utils.GetValueNull<byte>(reader, "EncargadoLinea"),
+                            Categoria = Utils.GetValue<int>(reader, "Categoria")
                         };
 
                         list.Add(member);
@@ -123,7 +124,8 @@ namespace api_egc.Utils
                         DescripcionComplicacionMedica = Utils.GetValueNull<string>(reader, "DescripcionComplicacionMedica"),
                         PerteneceALinea = Utils.GetValue<byte>(reader, "PerteneceALinea"),
                         TipoLinea = Utils.GetValueNull<byte>(reader, "TipoLinea"),
-                        EncargadoLinea = Utils.GetValueNull<byte>(reader, "EncargadoLinea")
+                        EncargadoLinea = Utils.GetValueNull<byte>(reader, "EncargadoLinea"),
+                        Categoria = Utils.GetValueNull<int>(reader, "Categoria")
                     };
 
                     list.Add(member);
@@ -137,7 +139,7 @@ namespace api_egc.Utils
             long squadId, long positionId, long isActive, long isAncient, long establecimientoId, string anotherEstablishment,
             long courseId, string courseName, long degreeId, string section, string fatherName, string fatherCell,
             int age, string username, string password, byte complicacionMedica,
-            int perteneceALinea, int tipoLinea, int encargadoLinea, string? descripcionComplicacionMedica)
+            int perteneceALinea, int tipoLinea, int encargadoLinea, int categoryId, string? descripcionComplicacionMedica)
         {
             using SqlConnection connection = new(connectionString);
             connection.Open();
@@ -171,7 +173,7 @@ namespace api_egc.Utils
             cmd.Parameters.Add("@perteneceALinea", SqlDbType.Int).Value = perteneceALinea;
             cmd.Parameters.Add("@tipoLinea", SqlDbType.Int).Value = perteneceALinea == 2 ? DBNull.Value : tipoLinea;
             cmd.Parameters.Add("@encargadoLinea", SqlDbType.Int).Value = perteneceALinea == 2 ? DBNull.Value : encargadoLinea;
-
+            cmd.Parameters.Add("@categoryId", SqlDbType.TinyInt).Value = categoryId;
 
             // Ejecutar el procedimiento
             cmd.ExecuteNonQuery();
@@ -180,7 +182,7 @@ namespace api_egc.Utils
         public static void EXEC_SP_INSERT_MEMBER(string connectionString, string firstName, string lastName, int years,
             string cellPhone, long establecimientoId, byte complicacionMedica, string? anotherEstablishment, long courseId, string? courseName,
             long degreeId, string? degreeName, string section, long squadId, long positionId,
-            bool isAncient, string? fatherName, string? fatherCell, bool isActive, string? username,
+            bool isAncient, int categoryId, string? fatherName, string? fatherCell, bool isActive, string? username,
             string? descripcionComplicacionMedica)
         {
             using SqlConnection connection = new(connectionString);
@@ -215,7 +217,8 @@ namespace api_egc.Utils
             cmd.Parameters.Add("@INTUsuario", SqlDbType.VarChar).Value = (object?)username ?? DBNull.Value;
             cmd.Parameters.Add("@complicacionMedica", SqlDbType.TinyInt).Value = complicacionMedica;
             cmd.Parameters.Add("@descripcionComplicacionMedica", SqlDbType.NVarChar, 1000).Value = (object?)descripcionComplicacionMedica ?? DBNull.Value;
-            
+            cmd.Parameters.Add("@categoryId", SqlDbType.TinyInt).Value = categoryId;
+
             cmd.ExecuteNonQuery();
         }
 

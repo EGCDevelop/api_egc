@@ -1,5 +1,4 @@
-﻿using System.Data.SqlClient;
-using System.Text.Json.Nodes;
+﻿using System.Text.Json.Nodes;
 using api_egc.Models;
 using api_egc.Utils;
 using Microsoft.AspNetCore.Mvc;
@@ -38,7 +37,6 @@ namespace api_egc.Controllers
                 string search = string.IsNullOrWhiteSpace(like) ? "%" : like.ToLower();
 
                 List<MemberDTO> list = MemberUtils.EXEC_SP_GET_INTEGRANTE_LIKE(connectionString, year, search, squadId, schoolId, isNew, memberState);
-                
                 
                 return Ok(new
                 {
@@ -99,6 +97,7 @@ namespace api_egc.Controllers
             try
             {
                 string connectionString = _configuration.GetConnectionString("DbEgcConnection")!;
+
                 // DATOS DE INTEGRANTE
                 long id = long.Parse(json["memberId"]!.ToString());
                 string firstName = json["firstName"]!.ToString();
@@ -108,6 +107,7 @@ namespace api_egc.Controllers
                 long positionId = long.Parse(json["positionId"]!.ToString());
                 long isActive = long.Parse(json["isActive"]!.ToString());
                 long isAncient = long.Parse(json["isAncient"]!.ToString());
+                int categoryId = int.Parse(json["categoryId"]!.ToString());
 
                 int age = 0;
                 if (json.ContainsKey("age") && json["age"] != null && json["age"]!.ToString() != "")
@@ -135,6 +135,7 @@ namespace api_egc.Controllers
                 }
                 byte complicacionMedica = byte.Parse(json["complicacionMedica"]!.ToString());
                 string? descripcionComplicacionMedica = json["descripcionComplicacionMedica"]?.ToString();
+
                 int perteneceALinea = int.Parse(json["perteneceALinea"]!.ToString());
                 int tipoLinea = int.Parse(json["tipoLinea"]!.ToString());
                 int encargadoLinea = int.Parse(json["encargadoLinea"]!.ToString());
@@ -142,10 +143,10 @@ namespace api_egc.Controllers
                 MemberUtils.EXEC_SP_UPDATE_MEMBER(connectionString, id, firstName, lastName, cellPhone, squadId, positionId,
                     isActive, isAncient, establecimientoId, anotherEstablishment, courseId, courseName, degreeId, section,
                     fatherName, fatherCell, age, username, password, complicacionMedica, 
-                    perteneceALinea, tipoLinea, encargadoLinea, descripcionComplicacionMedica);
+                    perteneceALinea, tipoLinea, encargadoLinea, categoryId, descripcionComplicacionMedica);
 
                 GeneralMethodsUtils.EXEC_SP_UPDATE_MEMBER_PER_YEAR(connectionString, id, squadId, positionId,
-                    perteneceALinea, encargadoLinea);
+                    perteneceALinea, encargadoLinea, categoryId);
 
                 return Ok(new
                 {
@@ -182,6 +183,7 @@ namespace api_egc.Controllers
                 long positionId = long.Parse(json["positionId"]!.ToString());
                 bool isActive = bool.Parse(json["isActive"]!.ToString());
                 bool isAncient = bool.Parse(json["isAncient"]!.ToString());
+                
 
                 // DATOS DE CARRERA
                 long establecimientoId = long.Parse(json["establecimientoId"]!.ToString());
@@ -191,6 +193,7 @@ namespace api_egc.Controllers
                 long degreeId = long.Parse(json["degreeId"]!.ToString());
                 string? degreeName = json["degreeName"]?.ToString();
                 string section = json["section"]!.ToString();
+                int categoryId = int.Parse(json["categoryId"]!.ToString());
 
                 // OTROS DATOS
                 string? fatherName = json["fatherName"]?.ToString();
@@ -201,7 +204,7 @@ namespace api_egc.Controllers
 
                 MemberUtils.EXEC_SP_INSERT_MEMBER(connectionString, firstName, lastName, age, cellPhone,
                     establecimientoId, complicacionMedica, anotherEstablishment, courseId, courseName, degreeId, degreeName,
-                    section, squadId, positionId, isAncient, fatherName, fatherCell, isActive, username,
+                    section, squadId, positionId, isAncient, categoryId, fatherName, fatherCell, isActive, username,
                     descripcionComplicacionMedica);
 
                 List<IntegrantePerYearDto> list = GeneralMethodsUtils.EXEC_SP_GET_BY_INSERT_PER_YEAR(connectionString);
@@ -209,7 +212,7 @@ namespace api_egc.Controllers
                 foreach (IntegrantePerYearDto dto in list)
                 {
                     GeneralMethodsUtils.EXEC_SP_INSERT_MEMEBER_PER_YEAR(connectionString, dto.INTIdIntegrante,
-                        dto.INTESCIdEscuadra, dto.INTPUIdPuesto);
+                        dto.INTESCIdEscuadra, dto.INTPUIdPuesto, dto.INTCategoria);
                 }
 
                 return Ok(new

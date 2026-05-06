@@ -2,7 +2,6 @@
 using api_egc.Utils;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Data.SqlClient;
 using System.Text.Json.Nodes;
 
 namespace api_egc.Controllers
@@ -70,10 +69,15 @@ namespace api_egc.Controllers
 
                     else if (escuadraComandante == 1 || escuadraComandante == 12)
                     {
-                        HashSet<long> permitidos = [1, 12, 14];
+                        HashSet<long> permitidos = [1, 12, 14, 16];
                         if (permitidos.Contains(escuadraIntegrante)) esAutorizado = true;
                     }
 
+                    else if(escuadraComandante == 4 || escuadraComandante == 5)
+                    {
+                        HashSet<long> permitidos = [4, 5];
+                        if (permitidos.Contains(escuadraIntegrante)) esAutorizado = true;
+                    }
                     else if (escuadraComandante == escuadraIntegrante)
                     {
                         esAutorizado = true;
@@ -161,22 +165,13 @@ namespace api_egc.Controllers
         {
             try
             {
-                _logger.LogInformation("GetMatrizAsistencia...");
-
                 string connectionString = _configuration.GetConnectionString(ConfigController.CurrentEnvironment)!;
                 DateTime fechaBusqueda = fechaInicio ?? new DateTime(2026, 1, 1);
 
-                _logger.LogInformation("uno");
-                _logger.LogInformation($"idEscuadra = {idEscuadra}");
-                _logger.LogInformation($"tipoIntegrante = {tipoIntegrante}");
-                _logger.LogInformation($"filtroPuesto = {filtroPuesto}");
-                _logger.LogInformation($"fechaBusqueda = {fechaBusqueda}");
-
-
+                
                 var list = AsistenciaUtils.EXEC_SP_REPORTE_ASISTENCIA_MATRIZ(connectionString, idEscuadra, 
                     tipoIntegrante, filtroPuesto, fechaBusqueda);
-                _logger.LogInformation("dos");
-
+                
                 return Ok(new { ok = true, list });
             }
             catch (Exception ex)

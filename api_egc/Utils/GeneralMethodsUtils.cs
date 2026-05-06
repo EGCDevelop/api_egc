@@ -166,7 +166,8 @@ namespace api_egc.Utils
                     {
                         INTIdIntegrante = Utils.GetValue<long>(reader, "INTIdIntegrante"),
                         INTESCIdEscuadra = Utils.GetValue<long>(reader, "INTESCIdEscuadra"),
-                        INTPUIdPuesto = Utils.GetValue<long>(reader, "INTPUIdPuesto")
+                        INTPUIdPuesto = Utils.GetValue<long>(reader, "INTPUIdPuesto"),
+                        INTCategoria = Utils.GetValue<int>(reader, "INTCategoria"),
                     };
 
                     list.Add(integrantePerYearDto);
@@ -177,7 +178,7 @@ namespace api_egc.Utils
         }
 
         public static void EXEC_SP_INSERT_MEMEBER_PER_YEAR(string connectionString, long IPAINTIdIntegrante, 
-            long IPAESCIdEscuadra, long IPAPUIdPuesto)
+            long IPAESCIdEscuadra, long IPAPUIdPuesto, int categoryId)
         {
             int year =DateTime.Now.Year;
 
@@ -190,7 +191,9 @@ namespace api_egc.Utils
             cmd.Parameters.Add("@IPAESCIdEscuadra", SqlDbType.BigInt).Value = IPAESCIdEscuadra;
             cmd.Parameters.Add("@IPAPUIdPuesto", SqlDbType.BigInt).Value = IPAPUIdPuesto;
             cmd.Parameters.Add("@IPAAnio", SqlDbType.SmallInt).Value = year;
-            
+            cmd.Parameters.Add("@categoryId", SqlDbType.TinyInt).Value = categoryId;
+
+
             // Ejecutar el procedimiento
             cmd.ExecuteNonQuery();
         }
@@ -224,7 +227,7 @@ namespace api_egc.Utils
         }
 
         public static void EXEC_SP_UPDATE_MEMBER_PER_YEAR(string connectionString, long memberId, long squadId,
-            long positionId, int perteneceALinea, int encargadoLinea)
+            long positionId, int perteneceALinea, int encargadoLinea, int categoryId)
         {
             int year = DateTime.Now.Year;
             using SqlConnection connection = new(connectionString);
@@ -239,6 +242,7 @@ namespace api_egc.Utils
             cmd.Parameters.Add("@year", SqlDbType.Int).Value = year;
             cmd.Parameters.Add("@perteneceALinea", SqlDbType.Int).Value = perteneceALinea == 2 ? DBNull.Value : perteneceALinea;
             cmd.Parameters.Add("@encargadoLinea", SqlDbType.Int).Value = perteneceALinea == 2 ? DBNull.Value : encargadoLinea;
+            cmd.Parameters.Add("@categoryId", SqlDbType.TinyInt).Value = categoryId;
 
             // Ejecutar el procedimiento
             cmd.ExecuteNonQuery();
