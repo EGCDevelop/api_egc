@@ -263,5 +263,40 @@ namespace api_egc.Controllers
                 return StatusCode(500, fullMessage);
             }
         }
+
+        [HttpPut]
+        [Route("update_member_biometric")]
+        public IActionResult UpdateMemberBiometric([FromBody] JsonObject json)
+        {
+            try
+            {
+                string connectionString = _configuration.GetConnectionString("DbEgcConnection")!;
+
+                // DATOS DE INTEGRANTE
+                long id = long.Parse(json["memberId"]!.ToString());
+                int biometricEnabled = int.Parse(json["biometricEnabled"]!.ToString());
+                string nuevoToken = Guid.NewGuid().ToString();
+
+                MemberUtils.EXEC_SP_UPDATE_MEMBER_BIOMETRIC(connectionString, id, biometricEnabled, nuevoToken);
+
+                return Ok(new
+                {
+                    ok = true,
+                    nuevoToken
+                });
+            }
+            catch (Exception ex)
+            {
+                var fullMessage = ex.InnerException != null
+                                  ? $"{ex.Message} | Original: {ex.InnerException.Message}"
+                                  : ex.Message;
+
+                _logger.LogInformation($"fullMessage == {fullMessage}");
+                _logger.LogInformation($"StackTrace == {ex.StackTrace}");
+
+                return StatusCode(500, fullMessage);
+            }
+        }
+
     }
 }

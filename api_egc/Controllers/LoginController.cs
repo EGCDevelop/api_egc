@@ -203,7 +203,6 @@ namespace api_egc.Controllers
             }
         }
 
-
         [HttpPut]
         [Route("change_password")]
         public IActionResult ChangePassword([FromBody] JsonObject json)
@@ -256,6 +255,97 @@ namespace api_egc.Controllers
                 return StatusCode(500, new { message = $"Error al hacer login {ex}" });
             }
         }
+
+
+        [HttpPost]
+        [Route("biometric_login")]
+        public IActionResult BiometricLogin([FromBody] JsonObject json)
+        {
+            try
+            {
+                long memberId = long.Parse(json["memberId"]!.ToString());
+                string token = json["token"]!.ToString();
+                string version = json["version"]!.ToString();
+                string username = json["username"]!.ToString();
+
+                string connectionString = _configuration.GetConnectionString(ConfigController.CurrentEnvironment)!;
+
+                Versiones dbVersion = LoginUtils.EXEC_SP_VERSION_APP(connectionString);
+
+                // comparamos si las versiones son iguales
+                if (!version.Equals(dbVersion.VERNumero) && dbVersion.VERObligatoria == 1)
+                {
+                    return BadRequest(new
+                    {
+                        ok = false,
+                        message = "¡ UPS ! debes actualizar a la versión más reciente"
+                    });
+                }
+
+                // buscamos la informacion del integrante
+                Member member = LoginUtils.EXEC_SP_GET_MEMBER_BY_USERNAME_ID(connectionString, memberId, token);
+
+                if (member != null)
+                {
+                    // Generamos el token JWT
+                    var tokenHandler = new JwtSecurityTokenHandler();
+                    var key = Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]!);
+                    var tokenDescriptor = new SecurityTokenDescriptor
+                    {
+                        Subject = new ClaimsIdentity(new[]
+                        {
+                            new Claim(ClaimTypes.Name, member.INTIdIntegrante.ToString()),
+                            new Claim("FullName", $"{member.INTNombres} {member.INTApellidos}"),
+                            new Claim("Role", member.INTPUIdPuesto.ToString())
+                        }),
+                        Expires = DateTime.UtcNow.AddHours(1),
+                        //Expires = DateTime.UtcNow.AddMinutes(1),
+                        Issuer = _configuration["Jwt:Issuer"],
+                        Audience = _configuration["Jwt:Audience"],
+                        SigningCredentials = new SigningCredentials(
+                            new SymmetricSecurityKey(key),
+                            SecurityAlgorithms.HmacSha256Signature
+                        )
+                    };
+
+                    var sessionToken = tokenHandler.CreateToken(tokenDescriptor);
+
+                    // Guardamos token y bitácora
+                    LoginUtils.EXEC_SP_UPDATE_TOKEN(connectionString, username, tokenHandler.WriteToken(sessionToken));
+                    LoginUtils.EXEC_SP_INSERT_BITACORA(connectionString, member.INTIdIntegrante);
+
+                    return Ok(new
+                    {
+                        ok = true,
+                        member.INTIdIntegrante,
+                        member.INTNombres,
+                        member.INTApellidos,
+                        member.INTESCIdEscuadra,
+                        member.INTPUIdPuesto,
+                        token = tokenHandler.WriteToken(sessionToken),
+                        username,
+                        isMemeber = 1
+                    });
+                }
+
+                return Unauthorized(new
+                {
+                    ok = false,
+                    message = "Usuario o contraseña incorrectos"
+                });
+
+            }
+            catch (SqlException sqlEx)
+            {
+                return StatusCode(500, new { message = $"Error en sql = {sqlEx}" });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = $"Error al hacer login {ex}" });
+            }
+        }
+
+
 
 
     }

@@ -236,5 +236,24 @@ namespace api_egc.Utils
 
             cmd.ExecuteNonQuery();
         }
+
+        public static void EXEC_SP_UPDATE_MEMBER_BIOMETRIC(string connectionString, long id,
+            int biometricEnabled, string persistentToken)
+        {
+            using SqlConnection connection = new(connectionString);
+            connection.Open();
+
+            using SqlCommand cmd = new("SP_UPDATE_MEMBER_BIOMETRIC", connection);
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.Parameters.Add("@memeberId", SqlDbType.BigInt).Value = id;
+            cmd.Parameters.Add("@biometricEnabled", SqlDbType.TinyInt).Value = biometricEnabled;
+            cmd.Parameters.Add("@persistenToken", SqlDbType.NVarChar, -1).Value =
+                    (biometricEnabled == 2 || string.IsNullOrEmpty(persistentToken))
+                    ? DBNull.Value
+                    : persistentToken;
+
+            // Ejecutar el procedimiento
+            cmd.ExecuteNonQuery();
+        }
     }
 }

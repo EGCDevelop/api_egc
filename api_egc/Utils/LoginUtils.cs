@@ -217,5 +217,42 @@ namespace api_egc.Utils
         }
 
 
+
+        public static Member EXEC_SP_GET_MEMBER_BY_USERNAME_ID(string connectionString, long memberId, string token)
+        {
+            Member member = null;
+
+            using (SqlConnection connection = new(connectionString))
+            {
+                connection.Open();
+
+                using (SqlCommand cmd = new("SP_GET_MEMBER_BY_USERNAME_ID", connection))
+                {
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.Parameters.Add("@memberId", SqlDbType.BigInt).Value = memberId;
+                    cmd.Parameters.Add("@token", SqlDbType.NVarChar, -1).Value = token;
+
+
+                    using SqlDataReader reader = cmd.ExecuteReader();
+
+                    if (reader.Read())
+                    {
+                        member = new()
+                        {
+                            INTIdIntegrante = Utils.GetValue<long>(reader, "INTIdIntegrante"),
+                            INTNombres = Utils.GetValue<string>(reader, "INTNombres"),
+                            INTApellidos = Utils.GetValue<string>(reader, "INTApellidos"),
+                            INTESCIdEscuadra = Utils.GetValue<long>(reader, "INTESCIdEscuadra"),
+                            INTPUIdPuesto = Utils.GetValue<long>(reader, "INTPUIdPuesto"),
+                            INTPassword = Utils.GetValue<string>(reader, "INTPassword")
+                        };
+                    }
+                }
+            }
+
+            return member!;
+        }
+
+
     }
 }
