@@ -76,25 +76,6 @@ namespace api_egc.Utils
             }
         }
 
-        //public static bool EXEC_SP_GET_ASISTENCIA_BY_INTEGRANTE(string connectionString, long id, long eventId)
-        //{
-        //    DateTime date = Utils.getCurrentDateGMT6();
-        //    using SqlConnection connection = new(connectionString);
-        //    connection.Open();
-
-        //    using SqlCommand cmd = new("SP_GET_ASISTENCIA_BY_INTEGRANTE", connection);
-        //    cmd.CommandType = CommandType.StoredProcedure;
-        //    cmd.Parameters.Add("@Id", SqlDbType.BigInt).Value = id;
-        //    cmd.Parameters.Add("@Fecha", SqlDbType.DateTime).Value = date;
-        //    cmd.Parameters.Add("@eventId", SqlDbType.BigInt).Value = eventId;
-
-        //    // Ejecutar el procedimiento y obtener el resultado
-        //    object result = cmd.ExecuteScalar();
-
-        //    // Si `result` no es null, significa que existe asistencia
-        //    return result != null;
-        //}
-
         public static bool EXEC_SP_GET_ASISTENCIA_BY_INTEGRANTE(string connectionString, long id, long eventId)
         {
             DateTime date = Utils.getCurrentDateGMT6();
