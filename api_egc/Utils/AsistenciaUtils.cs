@@ -5,7 +5,7 @@ using System.Dynamic;
 
 namespace api_egc.Utils
 {
-    public class AsistenciaUtils
+    public static class AsistenciaUtils
     {
 
         public static IntegranteDto EXEC_SP_GET_INTEGRANTE_BY_ID(string connectionString, long idIntegrante)

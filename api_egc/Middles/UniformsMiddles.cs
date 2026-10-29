@@ -1,7 +1,6 @@
 ﻿using api_egc.Models;
 using System.Data;
 using System.Data.SqlClient;
-using System.Xml.Linq;
 
 namespace api_egc.Middles
 {
