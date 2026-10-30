@@ -52,14 +52,12 @@ namespace api_egc.Controllers
 
         [HttpPost]
         [Route("update_closet")]
-        public IActionResult UpdateCloset([FromBody] List<Uniform> uniforms)
+        public IActionResult UpdateCloset([FromBody] List<Closet> closets)
         {
             try
             {
-                foreach (Uniform uniform in uniforms)
-                {
-                    _logger.LogInformation($"Uniform: {uniform.Id} | {uniform.Name} | {uniform.Price} | {uniform.State}");
-                }
+                string connectionString = _configuration.GetConnectionString("DbEgcConnection")!;
+                ClosetMiddles.TransactionUniformsUpdated(connectionString, closets);
 
                 return Ok(new {
                     ok = true 
