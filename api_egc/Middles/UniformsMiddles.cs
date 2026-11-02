@@ -1,4 +1,4 @@
-﻿using api_egc.Models;
+﻿using api_egc.Models.Uniforms;
 using System.Data;
 using System.Data.SqlClient;
 

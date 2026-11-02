@@ -1,5 +1,5 @@
 ﻿using api_egc.Middles;
-using api_egc.Models;
+using api_egc.Models.Uniforms;
 using Microsoft.AspNetCore.Mvc;
 
 namespace api_egc.Controllers

@@ -1,4 +1,4 @@
-﻿namespace api_egc.Models
+﻿namespace api_egc.Models.Uniforms
 {
     public class Closet
     {
