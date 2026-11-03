@@ -1,7 +1,7 @@
 ﻿using api_egc.Models.Uniforms;
 using api_egc.Models.Uniforms.DTO;
 using System.Data;
-using System.Data.SqlClient;
+using Microsoft.Data.SqlClient;
 
 namespace api_egc.Middles
 {

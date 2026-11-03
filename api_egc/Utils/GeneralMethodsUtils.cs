@@ -1,11 +1,11 @@
 ﻿using System.Data;
-using System.Data.SqlClient;
+using Microsoft.Data.SqlClient;
 using api_egc.Models;
 using api_egc.Models.Instructors;
 
 namespace api_egc.Utils
 {
-    public class GeneralMethodsUtils
+    public static class GeneralMethodsUtils
     {
         public static List<Escuadras> EXEC_SP_GET_ESCUADRA(string connectionString)
         {

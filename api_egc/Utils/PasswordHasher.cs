@@ -3,7 +3,7 @@ using System.Security.Cryptography;
 
 namespace api_egc.Utils
 {
-    public class PasswordHasher
+    public static class PasswordHasher
     {
         private const int SaltSize = 16;
 

@@ -1,7 +1,7 @@
 ﻿using api_egc.Models;
 using System.Data;
-using System.Data.SqlClient;
 using System.Dynamic;
+using Microsoft.Data.SqlClient;
 
 namespace api_egc.Utils
 {

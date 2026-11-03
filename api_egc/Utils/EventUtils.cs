@@ -1,10 +1,10 @@
 ﻿using System.Data;
-using System.Data.SqlClient;
+using Microsoft.Data.SqlClient;
 using api_egc.Models;
 
 namespace api_egc.Utils
 {
-    public class EventUtils
+    public static class EventUtils
     {
         public static int EXEC_SP_INSERTAREVENTO(string connectionString, string title, string description, DateTime eventDate,
             TimeSpan commandersEntry, bool onlyCommanders, TimeSpan membersEntry, string userCreate, bool generalBand,

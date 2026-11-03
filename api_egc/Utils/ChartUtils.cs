@@ -1,10 +1,10 @@
 ﻿using api_egc.Models;
 using System.Data;
-using System.Data.SqlClient;
+using Microsoft.Data.SqlClient;
 
 namespace api_egc.Utils
 {
-    public class ChartUtils
+    public static class ChartUtils
     {
         public static List<AttendanceChartDTO> EXEC_SP_GET_DATA_FROM_ATTENDANCE_CHART(string connectionString, long eventId, 
             long squadId)

@@ -1,10 +1,10 @@
 ﻿using System.Data;
-using System.Data.SqlClient;
+using Microsoft.Data.SqlClient;
 using api_egc.Models;
 
 namespace api_egc.Utils
 {
-    public class MemberUtils
+    public static class MemberUtils
     {
         public static List<MemberDTO> EXEC_SP_GET_INTEGRANTE_LIKE(string connectionString, int year, string like,
             long squadId, long schoolId, int isNew, int memberState)

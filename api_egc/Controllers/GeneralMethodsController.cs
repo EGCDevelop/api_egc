@@ -1,5 +1,4 @@
-﻿using System.Data.SqlClient;
-using api_egc.Models;
+﻿using api_egc.Models;
 using api_egc.Models.Instructors;
 using api_egc.Utils;
 using Microsoft.AspNetCore.Mvc;

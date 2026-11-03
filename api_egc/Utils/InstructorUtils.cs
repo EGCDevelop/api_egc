@@ -1,11 +1,10 @@
 ﻿using api_egc.Models.Instructors;
 using System.Data;
-using System.Data.SqlClient;
-using System.Diagnostics;
+using Microsoft.Data.SqlClient;
 
 namespace api_egc.Utils
 {
-    public class InstructorUtils
+    public static class InstructorUtils
     {
         public static List<EscuadrasInstructoresDTO> EXEC_SP_GET_ASSIGNED_SQUADS_INSTRUCTORS(string connectionString, long idInstructor)
         {

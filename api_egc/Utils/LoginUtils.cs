@@ -1,11 +1,11 @@
 ﻿using api_egc.Models;
 using api_egc.Models.Instructors;
 using System.Data;
-using System.Data.SqlClient;
+using Microsoft.Data.SqlClient;
 
 namespace api_egc.Utils
 {
-    public class LoginUtils
+    public static class LoginUtils
     {
 
         public static Versiones EXEC_SP_VERSION_APP(string connectionString)
