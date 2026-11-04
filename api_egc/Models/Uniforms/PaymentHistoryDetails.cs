@@ -7,11 +7,11 @@
     {
         public required long Id { get; set; }
 
+        public required long PaymentHistoryId { get; set; }
+
         /// <summary>
         /// 1 - entradas | 2 - salidas
         /// </summary>
-        public required long PaymentHistoryId { get; set; }
-
         public required byte TypeMovement { get; set; } 
 
         public required int NumberOneBills { get; set; }
@@ -27,5 +27,10 @@
         public required int NumberOneHundredBills { get; set; }
 
         public required int TwoHundredBills { get; set; }
+
+        public override string ToString()
+        {
+            return $"{{{nameof(Id)}={Id.ToString()}, {nameof(PaymentHistoryId)}={PaymentHistoryId.ToString()}, {nameof(TypeMovement)}={TypeMovement.ToString()}, {nameof(NumberOneBills)}={NumberOneBills.ToString()}, {nameof(NumberFiveBills)}={NumberFiveBills.ToString()}, {nameof(NumberTenBills)}={NumberTenBills.ToString()}, {nameof(NumberTwentyBills)}={NumberTwentyBills.ToString()}, {nameof(NumberFiftyBills)}={NumberFiftyBills.ToString()}, {nameof(NumberOneHundredBills)}={NumberOneHundredBills.ToString()}, {nameof(TwoHundredBills)}={TwoHundredBills.ToString()}}}";
+        }
     }
 }

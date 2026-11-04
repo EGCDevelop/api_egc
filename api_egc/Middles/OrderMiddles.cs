@@ -29,20 +29,54 @@ namespace api_egc.Middles
                 UniformOrder order = new()
                 {
                     Id = Utils.Utils.GetValue<int>(reader, "Id"),
-                    GrandTotal = Utils.Utils.GetValue<decimal>(reader, "GrandTotal"),
-                    AmountPaid = Utils.Utils.GetValue<decimal>(reader, "AmountPaid"),
-                    AmountPending = Utils.Utils.GetValue<decimal>(reader, "AmountPending"),
-                    MemberId = Utils.Utils.GetValue<long>(reader, "MemberId"),
-                    CreationDate = Utils.Utils.GetValue<DateTime>(reader, "CreationDate"),
-                    FullDeliveryDate = Utils.Utils.GetValue<DateTime>(reader, "FullDeliveryDate"),
-                    InstructorId = Utils.Utils.GetValue<long>(reader, "InstructorId"),
-                    FinancialState = Utils.Utils.GetValue<int>(reader, "FinancialState"),
-                    DeliveryState = Utils.Utils.GetValue<int>(reader, "DeliveryState")
+                    GrandTotal = Utils.Utils.GetValue<decimal>(reader, "GranTotal"),
+                    AmountPaid = Utils.Utils.GetValue<decimal>(reader, "MontoAbonado"),
+                    AmountPending = Utils.Utils.GetValue<decimal>(reader, "MontoPendiente"),
+                    MemberId = Utils.Utils.GetValue<long>(reader, "IdIntegrante"),
+                    CreationDate = Utils.Utils.GetValue<DateTime>(reader, "FechaCreacion"),
+                    FullDeliveryDate = Utils.Utils.GetValueNull<DateTime>(reader, "FechaEntregaCompleta"),
+                    InstructorId = Utils.Utils.GetValue<long>(reader, "INSId"),
+                    FinancialState = Utils.Utils.GetValue<int>(reader, "EstadoFinanciero"),
+                    DeliveryState = Utils.Utils.GetValue<int>(reader, "EstadoEntrega")
                 };
 
                 data.Add(order);
             }
             
+            return data;
+        }
+
+        public static List<UniformOrderDetails> EXEC_SP_GET_ORDER_DETAILS(string connectionString, long orderId)
+        {
+            List<UniformOrderDetails> data = [];
+
+            using SqlConnection connection = new(connectionString);
+            connection.Open();
+
+            using SqlCommand cmd = new("SP_GET_ORDER_DETAILS", connection);
+
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.Parameters.Add("@orderId", SqlDbType.BigInt).Value = orderId;
+
+            using SqlDataReader reader = cmd.ExecuteReader();
+
+            while (reader.Read())
+            {
+                UniformOrderDetails detail = new()
+                {
+                    Id = Utils.Utils.GetValue<int>(reader, "Id"),
+                    OrderId = Utils.Utils.GetValue<long>(reader, "OrderId"),
+                    UniformId = Utils.Utils.GetValue<int>(reader, "UniformId"),
+                    DeliveryState = Utils.Utils.GetValue<byte>(reader, "DeliveryState"),
+                    UserDelivery = Utils.Utils.GetValue<long>(reader, "UserDelivery"),
+                    DeliveryDate = Utils.Utils.GetValueNull<DateTime>(reader, "DeliveryDate"),
+                    DeliveryReversalComments = Utils.Utils.GetValueNull<string>(reader, "DeliveryReversalComments"),
+                    StateActive = Utils.Utils.GetValue<byte>(reader, "StateActive")
+                };
+
+                data.Add(detail);
+            }
+
             return data;
         }
 
@@ -65,29 +99,43 @@ namespace api_egc.Middles
                     detail.StateActive = 1;
                     EXEC_SP_INSERT_ORDER_DETAILS(connection, transaction, detail, orderId);
                 }
+
+                transaction.Commit();
             }
-            catch (Exception ex) 
+            catch (SqlException ex) 
             {
-                try
-                {
-                    transaction.Rollback();
-                }
-                catch (Exception rollbackException)
-                {
-                    throw new Exception(
-                        $"Error al revertir la transacción: {rollbackException.Message}",
-                        rollbackException);
-                }
+                transaction.Rollback();
+
                 throw new Exception(
-                    $"TRANSACTION_SAVE_ORDER: " +
-                    $"Error al crear orden: {ex.Message}",
+                    $"TRANSACTION_SAVE_ORDER: Error de SQL Server al crear la orden. " +
+                    $"Procedimiento: {ex.Procedure}. " +
+                    $"Línea: {ex.LineNumber}. " +
+                    $"Error SQL #{ex.Number}: {ex.Message}",
+                    ex);
+            }
+            catch(InvalidCastException ex)
+            {
+                transaction.Rollback();
+
+                throw new Exception(
+                    "TRANSACTION_SAVE_ORDER: El tipo de dato devuelto por el procedimiento " +
+                    "SP_INSERT_NEW_ORDER no coincide con el esperado. " +
+                    "Verifica si @InsertedID está declarado como INT o BIGINT en SQL Server.",
+                    ex);
+            }
+            catch(Exception ex)
+            {
+                transaction.Rollback();
+
+                throw new Exception(
+                    $"TRANSACTION_SAVE_ORDER: Error inesperado al crear la orden: {ex.Message}",
                     ex);
             }
         }
 
         public static long EXEC_SP_INSERT_NEW_ORDER(SqlConnection connection, SqlTransaction transaction, UniformOrder uniform)
         {
-            SqlParameter outputParam = new("@InsertedID", SqlDbType.Int) { Direction = ParameterDirection.Output };
+            SqlParameter outputParam = new("@InsertedID", SqlDbType.BigInt) { Direction = ParameterDirection.Output };
             using SqlCommand cmd = new("SP_INSERT_NEW_ORDER", connection, transaction);
             cmd.CommandType = CommandType.StoredProcedure;
 
@@ -109,7 +157,7 @@ namespace api_egc.Middles
         public static long EXEC_SP_INSERT_ORDER_DETAILS(SqlConnection connection, SqlTransaction transaction, UniformOrderDetails details,
             long orderId)
         {
-            SqlParameter outputParam = new("@InsertedID", SqlDbType.Int) { Direction = ParameterDirection.Output };
+            SqlParameter outputParam = new("@InsertedID", SqlDbType.BigInt) { Direction = ParameterDirection.Output };
             using SqlCommand cmd = new("SP_INSERT_ORDER_DETAILS", connection, transaction);
             cmd.CommandType = CommandType.StoredProcedure;
 

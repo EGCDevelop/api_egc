@@ -25,12 +25,40 @@ namespace api_egc.Controllers
 
         [HttpGet]
         [Route("get_order_by_filters")]
-        public IActionResult GetOrderByFilters([FromHeader] long memeberId, [FromHeader] int financialState, [FromHeader] int deliveryState)
+        public IActionResult GetOrderByFilters([FromQuery] long memeberId, [FromQuery] int financialState, [FromQuery] int deliveryState)
         {
             try
             {
                 string connectionString = _configuration.GetConnectionString("DbEgcConnection")!;
                 List<UniformOrder> data = OrderMiddles.EXEC_SP_GET_ORDER_BY_FILTERS(connectionString, memeberId, financialState, deliveryState);
+
+                return Ok(new
+                {
+                    ok = true,
+                    data
+                });
+            }
+            catch (Exception ex)
+            {
+                var fullMessage = ex.InnerException != null
+                                  ? $"{ex.Message} | Original: {ex.InnerException.Message}"
+                                  : ex.Message;
+
+                _logger.LogInformation($"fullMessage == {fullMessage}");
+                _logger.LogInformation($"StackTrace == {ex.StackTrace}");
+
+                return StatusCode(500, fullMessage);
+            }
+        }
+
+        [HttpGet]
+        [Route("get_order_details")]
+        public IActionResult GetOrderDetails([FromQuery] long orderId)
+        {
+            try
+            {
+                string connectionString = _configuration.GetConnectionString("DbEgcConnection")!;
+                List<UniformOrderDetails> data = OrderMiddles.EXEC_SP_GET_ORDER_DETAILS(connectionString, orderId);
 
                 return Ok(new
                 {

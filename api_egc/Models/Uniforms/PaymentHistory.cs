@@ -22,5 +22,10 @@
         public required long OrderId { get; set; }
 
         public required long UserReceived { get; set; }
+
+        public override string ToString()
+        {
+            return $"{{{nameof(Id)}={Id.ToString()}, {nameof(PaidAmount)}={PaidAmount.ToString()}, {nameof(CashReceived)}={CashReceived.ToString()}, {nameof(ChancheMoney)}={ChancheMoney.ToString()}, {nameof(PaidDate)}={PaidDate.ToString()}, {nameof(PaymentNumber)}={PaymentNumber.ToString()}, {nameof(Observations)}={Observations}, {nameof(OrderId)}={OrderId.ToString()}, {nameof(UserReceived)}={UserReceived.ToString()}}}";
+        }
     }
 }

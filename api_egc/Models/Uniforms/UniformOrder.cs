@@ -17,7 +17,7 @@
 
         public required DateTime CreationDate { get; set; }
 
-        public required DateTime FullDeliveryDate { get; set; }
+        public DateTime? FullDeliveryDate { get; set; }
 
         public required long InstructorId { get; set; }
 
