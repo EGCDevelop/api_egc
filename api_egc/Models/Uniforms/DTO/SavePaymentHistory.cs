@@ -4,6 +4,10 @@
     {
         public required PaymentHistory Payment { get; set; }
 
-        public required PaymentHistoryDetails Details { get; set; }
+        public required PaymentHistoryDetails Inflow { get; set; }
+
+        public required PaymentHistoryDetails? Outflow { get; set; }
+
+        public required UniformOrder Order { get; set; }
     }
 }

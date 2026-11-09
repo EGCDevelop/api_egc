@@ -2,6 +2,7 @@
 using api_egc.Models.Uniforms.DTO;
 using Microsoft.Data.SqlClient;
 using System.Data;
+using System.Transactions;
 
 namespace api_egc.Middles
 {
@@ -133,6 +134,50 @@ namespace api_egc.Middles
             }
         }
 
+        public static void TRANSACTION_ORDER_DETAIL(string connectionString, UniformOrderDetails details)
+        {
+            using SqlConnection connection = new(connectionString);
+            connection.Open();
+
+            using SqlTransaction transaction = connection.BeginTransaction();
+
+            try
+            {
+                EXEC_SP_UPDATE_ORDER_DETAIL(connection, transaction, details);
+
+
+                transaction.Commit();
+            }
+            catch (SqlException ex)
+            {
+                transaction.Rollback();
+
+                throw new Exception(
+                    $"TRANSACTION_ORDER_DETAIL: Error de SQL Server al crear la orden. " +
+                    $"Procedimiento: {ex.Procedure}. " +
+                    $"Línea: {ex.LineNumber}. " +
+                    $"Error SQL #{ex.Number}: {ex.Message}",
+                    ex);
+            }
+            catch (InvalidCastException ex)
+            {
+                transaction.Rollback();
+
+                throw new Exception(
+                    "TRANSACTION_ORDER_DETAIL: El tipo de dato devuelto por el procedimiento " +
+                    "EXEC_SP_UPDATE_ORDER_DETAIL no coincide con el esperado. "+
+                    ex);
+            }
+            catch (Exception ex)
+            {
+                transaction.Rollback();
+
+                throw new Exception(
+                    $"TRANSACTION_SAVE_ORDER: Error inesperado al crear la orden: {ex.Message}",
+                    ex);
+            }
+        }
+
         public static long EXEC_SP_INSERT_NEW_ORDER(SqlConnection connection, SqlTransaction transaction, UniformOrder uniform)
         {
             SqlParameter outputParam = new("@InsertedID", SqlDbType.BigInt) { Direction = ParameterDirection.Output };
@@ -164,7 +209,7 @@ namespace api_egc.Middles
             cmd.Parameters.Add("@OrderId", SqlDbType.BigInt).Value = orderId;
             cmd.Parameters.Add("@UniformId", SqlDbType.Int).Value = details.UniformId;
             cmd.Parameters.Add("@DeliveryState", SqlDbType.TinyInt).Value = details.DeliveryState;
-            cmd.Parameters.Add("@UserDelivery", SqlDbType.BigInt).Value = details.UserDelivery;
+            cmd.Parameters.Add("@UserDelivery", SqlDbType.BigInt).Value = details.UserDelivery == 0 ? DBNull.Value : details.UserDelivery;
             cmd.Parameters.Add("@DeliveryReversalComments", SqlDbType.NVarChar, -1).Value = string.IsNullOrEmpty(details.DeliveryReversalComments) ? DBNull.Value : details.DeliveryDate;
             cmd.Parameters.Add("@StateActive", SqlDbType.TinyInt).Value = details.StateActive;
             cmd.Parameters.Add(outputParam);
@@ -172,6 +217,36 @@ namespace api_egc.Middles
             cmd.ExecuteNonQuery();
 
             return (long)outputParam.Value;
+        }
+
+        public static void EXEC_SP_UPDATE_ORDER(SqlConnection connection, SqlTransaction transaction, UniformOrder order)
+        {
+            using SqlCommand cmd = new("SP_UPDATE_ORDER", connection, transaction);
+            cmd.CommandType = CommandType.StoredProcedure;
+
+            cmd.Parameters.Add("@OrderId", SqlDbType.BigInt).Value = order.Id;
+            cmd.Parameters.Add("@AmountPaid", SqlDbType.Decimal).Value = order.AmountPaid;
+            cmd.Parameters.Add("@AmountPending", SqlDbType.Decimal).Value = order.AmountPending;
+            cmd.Parameters.Add("@FullDeliveryDate", SqlDbType.DateTime).Value = order.FullDeliveryDate;
+            cmd.Parameters.Add("@FinancialState", SqlDbType.TinyInt).Value = order.FinancialState;
+            cmd.Parameters.Add("@DeliveryState", SqlDbType.TinyInt).Value = order.DeliveryState;
+
+            cmd.ExecuteNonQuery();
+        }
+
+        public static void EXEC_SP_UPDATE_ORDER_DETAIL(SqlConnection connection, SqlTransaction transaction, UniformOrderDetails details)
+        {
+            using SqlCommand cmd = new("SP_UPDATE_ORDER_DETAIL", connection, transaction);
+            cmd.CommandType = CommandType.StoredProcedure;
+
+            cmd.Parameters.Add("@Id", SqlDbType.BigInt).Value = details.Id;
+            cmd.Parameters.Add("@DeliveryState", SqlDbType.TinyInt).Value = details.DeliveryState;
+            cmd.Parameters.Add("@UserDelivery", SqlDbType.BigInt).Value = details.UserDelivery;
+            cmd.Parameters.Add("@DeliveryDate", SqlDbType.DateTime).Value = details.DeliveryDate;
+            cmd.Parameters.Add("@DeliveryReversalComments", SqlDbType.NVarChar, -1).Value = string.IsNullOrEmpty(details.DeliveryReversalComments) ? DBNull.Value : details.DeliveryReversalComments;
+            cmd.Parameters.Add("@StateActive", SqlDbType.TinyInt).Value = details.StateActive;
+
+            cmd.ExecuteNonQuery();
         }
     }
 }

@@ -33,16 +33,7 @@
 
         public override string ToString()
         {
-            return $"{{{nameof(Id)}={Id.ToString()}, " +
-                $"\n{nameof(GrandTotal)}={GrandTotal.ToString()}, " +
-                $"\n{nameof(AmountPaid)}={AmountPaid.ToString()}, " +
-                $"\n{nameof(AmountPending)}={AmountPending.ToString()}, " +
-                $"\n{nameof(MemberId)}={MemberId.ToString()}, " +
-                $"\n{nameof(CreationDate)}={CreationDate.ToString()}, " +
-                $"\n{nameof(FullDeliveryDate)}={FullDeliveryDate.ToString()}, " +
-                $"\n{nameof(InstructorId)}={InstructorId.ToString()}, " +
-                $"\n{nameof(FinancialState)}={FinancialState.ToString()}, " +
-                $"\n{nameof(DeliveryState)}={DeliveryState.ToString()}}}";
+            return $"{{{nameof(Id)}={Id.ToString()}, {nameof(GrandTotal)}={GrandTotal.ToString()}, {nameof(AmountPaid)}={AmountPaid.ToString()}, {nameof(AmountPending)}={AmountPending.ToString()}, {nameof(MemberId)}={MemberId.ToString()}, {nameof(CreationDate)}={CreationDate.ToString()}, {nameof(FullDeliveryDate)}={FullDeliveryDate.ToString()}, {nameof(InstructorId)}={InstructorId.ToString()}, {nameof(FinancialState)}={FinancialState.ToString()}, {nameof(DeliveryState)}={DeliveryState.ToString()}}}";
         }
     }
 }

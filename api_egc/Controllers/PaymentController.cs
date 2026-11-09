@@ -1,4 +1,5 @@
-﻿using api_egc.Models.Uniforms.DTO;
+﻿using api_egc.Middles;
+using api_egc.Models.Uniforms.DTO;
 using Microsoft.AspNetCore.Mvc;
 
 namespace api_egc.Controllers
@@ -29,7 +30,24 @@ namespace api_egc.Controllers
             {
                 _logger.LogInformation($"Payment = {data.Payment.ToString()}");
                 _logger.LogInformation($"---------------------------------------------");
-                _logger.LogInformation($"Details = {data.Details.ToString()}");
+                _logger.LogInformation($"Inflow = {data.Inflow.ToString()}");
+                _logger.LogInformation($"---------------------------------------------");
+                _logger.LogInformation($"Order = {data.Order.ToString()}");
+                _logger.LogInformation($"---------------------------------------------");
+                if (data.Outflow != null)
+                {
+                    _logger.LogInformation($"Outflow = {data.Outflow.ToString()}");
+                }
+
+                string connectionString = _configuration.GetConnectionString("DbEgcConnection")!;
+
+                // obtenemos el numero de pago correspondiente a la orden
+                int paymentNumber = PaymentMiddles.EXEC_SP_GET_PAYMENT_NUMBER(connectionString, data.Payment.OrderId);
+                paymentNumber++;
+                data.Payment.PaymentNumber = paymentNumber;
+
+                PaymentMiddles.TRANSACTION_SAVE_PAYMENT_HISTORY(connectionString, data);
+
                 return Ok(new
                 {
                     ok = true
