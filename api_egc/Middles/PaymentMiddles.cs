@@ -2,7 +2,6 @@
 using api_egc.Models.Uniforms.DTO;
 using Microsoft.Data.SqlClient;
 using System.Data;
-using System.Transactions;
 
 namespace api_egc.Middles
 {

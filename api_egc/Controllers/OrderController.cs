@@ -105,6 +105,33 @@ namespace api_egc.Controllers
                 return StatusCode(500, fullMessage);
             }
         }
-        
+
+        [HttpPut]
+        [Route("update_order_detail")]
+        public IActionResult UpdateOrderDetail([FromBody] UniformOrderDetails details)
+        {
+            try
+            {
+                string connectionString = _configuration.GetConnectionString("DbEgcConnection")!;
+                UniformOrder order = OrderMiddles.EXEC_SP_GET_ORDER_BY_ID(connectionString, details.OrderId);
+                OrderMiddles.TRANSACTION_ORDER_DETAIL(connectionString, details, order);
+
+                return Ok(new
+                {
+                    ok = true
+                });
+            }
+            catch (Exception ex)
+            {
+                var fullMessage = ex.InnerException != null
+                                  ? $"{ex.Message} | Original: {ex.InnerException.Message}"
+                                  : ex.Message;
+
+                _logger.LogInformation($"fullMessage == {fullMessage}");
+                _logger.LogInformation($"StackTrace == {ex.StackTrace}");
+
+                return StatusCode(500, fullMessage);
+            }
+        }
     }
 }

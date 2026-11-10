@@ -3,6 +3,7 @@ using api_egc.Models.Uniforms.DTO;
 using Microsoft.Data.SqlClient;
 using System.Data;
 using System.Transactions;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace api_egc.Middles
 {
@@ -45,6 +46,49 @@ namespace api_egc.Middles
             }
             
             return data;
+        }
+
+        public static UniformOrder EXEC_SP_GET_ORDER_BY_ID(string connectionString, long orderId)
+        {
+            try
+            {
+                UniformOrder? order =  null;
+
+                using SqlConnection connection = new(connectionString);
+                connection.Open();
+
+                using SqlCommand cmd = new("SP_GET_ORDER_BY_ID", connection);
+                cmd.CommandType = CommandType.StoredProcedure;
+
+                cmd.Parameters.Add("@orderId", SqlDbType.BigInt).Value = orderId;
+
+                using SqlDataReader reader = cmd.ExecuteReader();
+
+                if (reader.Read())
+                {
+                    order = new()
+                    {
+                        Id = Utils.Utils.GetValue<int>(reader, "Id"),
+                        GrandTotal = Utils.Utils.GetValue<decimal>(reader, "GranTotal"),
+                        AmountPaid = Utils.Utils.GetValue<decimal>(reader, "MontoAbonado"),
+                        AmountPending = Utils.Utils.GetValue<decimal>(reader, "MontoPendiente"),
+                        MemberId = Utils.Utils.GetValue<long>(reader, "IdIntegrante"),
+                        CreationDate = Utils.Utils.GetValue<DateTime>(reader, "FechaCreacion"),
+                        FullDeliveryDate = Utils.Utils.GetValueNull<DateTime>(reader, "FechaEntregaCompleta"),
+                        InstructorId = Utils.Utils.GetValue<long>(reader, "INSId"),
+                        FinancialState = Utils.Utils.GetValue<int>(reader, "EstadoFinanciero"),
+                        DeliveryState = Utils.Utils.GetValue<int>(reader, "EstadoEntrega")
+                    };
+                }
+
+                return order!;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(
+                    $"EXEC_SP_GET_ORDER_BY_ID: Error inesperado: {ex.Message}",
+                    ex);
+            }
         }
 
         public static List<UniformOrderDetails> EXEC_SP_GET_ORDER_DETAILS(string connectionString, long orderId)
@@ -134,7 +178,7 @@ namespace api_egc.Middles
             }
         }
 
-        public static void TRANSACTION_ORDER_DETAIL(string connectionString, UniformOrderDetails details)
+        public static void TRANSACTION_ORDER_DETAIL(string connectionString, UniformOrderDetails details, UniformOrder order)
         {
             using SqlConnection connection = new(connectionString);
             connection.Open();
@@ -145,6 +189,16 @@ namespace api_egc.Middles
             {
                 EXEC_SP_UPDATE_ORDER_DETAIL(connection, transaction, details);
 
+                // si el estado del detalle esta entregado, cambiamos el estado de entrega del pedidos a 2 - entrega parcial
+                if(details.DeliveryState == 2)
+                {
+                    order.DeliveryState = 2;
+                    OrderMiddles.EXEC_SP_UPDATE_ORDER(connection, transaction, order);
+                }
+
+                string logMessage = $"El usuario {details.UserDelivery} entrego el implemento con id de detalle: {details.UniformId} " +
+                    $"| Fecha de entrega: {details.DeliveryDate} |";
+                PaymentMiddles.EXEC_SP_INSERT_PAYMENT_LOGS(connection, transaction, logMessage, details.UserDelivery);
 
                 transaction.Commit();
             }
