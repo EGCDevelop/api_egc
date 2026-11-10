@@ -52,7 +52,6 @@ namespace api_egc.Middles
 
             try
             {
-
                 // insertamos el encabezado de un pago
                 long paymentHistoryId = EXEC_SP_INSERT_PAYMENT_HISTORY(connection, transaction, data.Payment);
 
