@@ -1,6 +1,7 @@
 ﻿using api_egc.Models.Uniforms;
-using System.Data;
+using api_egc.Models.Uniforms.DTO;
 using Microsoft.Data.SqlClient;
+using System.Data;
 
 namespace api_egc.Middles
 {
@@ -84,6 +85,41 @@ namespace api_egc.Middles
             cmd.Parameters.Add("@listId", SqlDbType.NVarChar, -1).Value = listId;
 
             cmd.ExecuteNonQuery();
+        }
+
+        public static ClosetSummary EXEC_SP_GET_CLOSET_SUMMARY(string connectionString, long squadId)
+        {
+            try
+            {
+                ClosetSummary? summary = null;
+
+                using SqlConnection connection = new(connectionString);
+                connection.Open();
+
+                using SqlCommand cmd = new("SP_GET_CLOSET_SUMMARY", connection);
+                cmd.CommandType = CommandType.StoredProcedure;
+
+                cmd.Parameters.Add("@squadId", SqlDbType.BigInt).Value = squadId;
+
+                using SqlDataReader reader = cmd.ExecuteReader();
+
+                if (reader.Read())
+                {
+                    summary = new()
+                    {
+                        IdEscuadra = Utils.Utils.GetValue<long>(reader, "IdEscuadra"),
+                        Precio = Utils.Utils.GetValue<decimal>(reader, "Precio")
+                    };
+                }
+
+                return summary!;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(
+                    $"SP_GET_CLOSET_SUMMARY: Error inesperado: {ex.Message}",
+                    ex);
+            }
         }
     }
 }
