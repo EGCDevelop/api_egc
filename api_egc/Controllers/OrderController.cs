@@ -1,6 +1,8 @@
 ﻿using api_egc.Middles;
+using api_egc.Models;
 using api_egc.Models.Uniforms;
 using api_egc.Models.Uniforms.DTO;
+using api_egc.Utils;
 using Microsoft.AspNetCore.Mvc;
 
 namespace api_egc.Controllers
@@ -25,16 +27,18 @@ namespace api_egc.Controllers
 
         [HttpGet]
         [Route("get_order_by_filters")]
-        public IActionResult GetOrderByFilters([FromQuery] long memeberId, [FromQuery] int financialState, [FromQuery] int deliveryState)
+        public IActionResult GetOrderByFilters([FromQuery] long memberId, [FromQuery] int financialState, [FromQuery] int deliveryState)
         {
             try
             {
                 string connectionString = _configuration.GetConnectionString("DbEgcConnection")!;
-                List<UniformOrder> data = OrderMiddles.EXEC_SP_GET_ORDER_BY_FILTERS(connectionString, memeberId, financialState, deliveryState);
+                IntegranteDto member = AsistenciaUtils.EXEC_SP_GET_INTEGRANTE_BY_ID(connectionString, memberId);
+                List<UniformOrder> data = OrderMiddles.EXEC_SP_GET_ORDER_BY_FILTERS(connectionString, memberId, financialState, deliveryState);
 
                 return Ok(new
                 {
                     ok = true,
+                    member,
                     data
                 });
             }

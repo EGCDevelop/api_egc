@@ -87,6 +87,7 @@ namespace api_egc.Controllers
             try
             {
                 string connectionString = _configuration.GetConnectionString("DbEgcConnection")!;
+                _logger.LogInformation($" Price == {uniform.Price}");
 
                 UniformsMiddles.EXEC_SP_UPDATE_UNIFORM(connectionString, uniform);
 

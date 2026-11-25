@@ -1,6 +1,7 @@
 ﻿using api_egc.Models.Uniforms;
 using System.Data;
 using Microsoft.Data.SqlClient;
+using api_egc.Utils;
 
 namespace api_egc.Middles
 {
@@ -46,7 +47,7 @@ namespace api_egc.Middles
 
             cmd.CommandType = CommandType.StoredProcedure;
             cmd.Parameters.Add("@name", SqlDbType.NVarChar, -1).Value = uniform.Name;
-            cmd.Parameters.Add("@price", SqlDbType.Decimal).Value = uniform.Price;
+            cmd.Parameters.AddDecimal("@price", uniform.Price);
 
             cmd.ExecuteNonQuery();
         }
@@ -61,7 +62,8 @@ namespace api_egc.Middles
             cmd.CommandType = CommandType.StoredProcedure;
             cmd.Parameters.Add("@id", SqlDbType.Int).Value = uniform.Id;
             cmd.Parameters.Add("@name", SqlDbType.NVarChar, -1).Value = uniform.Name;
-            cmd.Parameters.Add("@price", SqlDbType.Decimal).Value = uniform.Price;
+            cmd.Parameters.AddDecimal("@price", uniform.Price);
+
             cmd.Parameters.Add("@state", SqlDbType.TinyInt).Value = uniform.State;
 
             cmd.ExecuteNonQuery();

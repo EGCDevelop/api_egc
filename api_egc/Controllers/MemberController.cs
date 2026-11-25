@@ -12,7 +12,6 @@ namespace api_egc.Controllers
         private readonly IConfiguration _configuration = configuration;
         private readonly ILogger<MemberController> _logger = logger;
 
-
         [HttpGet]
         [Route("get_ping")]
         public IActionResult GetPing()
