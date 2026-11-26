@@ -26,8 +26,8 @@ namespace api_egc.Middles
                 Closet closet = new()
                 {
                     Id = Utils.Utils.GetValue<int>(reader, "Id"),
-                    SquadId = Utils.Utils.GetValue<int>(reader, "CLOUNIId"),
-                    UniformId = Utils.Utils.GetValue<int>(reader, "IdEscuadra"),
+                    UniformId = Utils.Utils.GetValue<int>(reader, "CLOUNIId"),
+                    SquadId = Utils.Utils.GetValue<int>(reader, "IdEscuadra"),
                     Estado = Utils.Utils.GetValue<byte>(reader, "Estado")
                 };
 
@@ -78,11 +78,13 @@ namespace api_egc.Middles
         public static void EXEC_SP_UPDATE_CLOSET(SqlConnection connection, SqlTransaction transaction, List<Closet> closetList)
         {
             string listId = string.Join(",", closetList.Select(x => x.UniformId.ToString()));
+            long squadId = closetList[0].SquadId;
 
             using SqlCommand cmd = new("SP_UPDATE_CLOSET", connection, transaction);
             cmd.CommandType = CommandType.StoredProcedure;
 
             cmd.Parameters.Add("@listId", SqlDbType.NVarChar, -1).Value = listId;
+            cmd.Parameters.Add("@squadId", SqlDbType.BigInt).Value = squadId;
 
             cmd.ExecuteNonQuery();
         }
@@ -107,8 +109,10 @@ namespace api_egc.Middles
                 {
                     summary = new()
                     {
-                        IdEscuadra = Utils.Utils.GetValue<long>(reader, "IdEscuadra"),
-                        Precio = Utils.Utils.GetValue<decimal>(reader, "Precio")
+                        Id = Utils.Utils.GetValue<long>(reader, "Id"),
+                        Escuadra = Utils.Utils.GetValue<string>(reader, "Escuadra"),
+                        Precio = Utils.Utils.GetValue<decimal>(reader, "Precio"),
+                        Cantidad = Utils.Utils.GetValue<int>(reader, "Cantidad")
                     };
                 }
 

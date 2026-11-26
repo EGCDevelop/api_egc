@@ -2,7 +2,11 @@
 {
     public class ClosetSummary
     {
-        public required long IdEscuadra { get; set; }
+        public required long Id { get; set; }
+
+        public required string Escuadra { get; set; }
+
+        public required int Cantidad { get; set; }
 
         public required decimal Precio { get; set; }
     }
