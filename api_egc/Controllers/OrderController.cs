@@ -56,6 +56,36 @@ namespace api_egc.Controllers
         }
 
         [HttpGet]
+        [Route("get_order_summary")]
+        public IActionResult GetOrderSummary([FromQuery] long memberId, [FromQuery] int financialState, [FromQuery] int deliveryState)
+        {
+            try
+            {
+                string connectionString = _configuration.GetConnectionString("DbEgcConnection")!;
+                IntegranteDto member = AsistenciaUtils.EXEC_SP_GET_INTEGRANTE_BY_ID(connectionString, memberId);
+                List<OrderSummary> data = OrderMiddles.EXEC_SP_GET_ORDER_SUMMARY(connectionString, memberId, financialState, deliveryState);
+
+                return Ok(new
+                {
+                    ok = true,
+                    member,
+                    data
+                });
+            }
+            catch (Exception ex)
+            {
+                var fullMessage = ex.InnerException != null
+                                  ? $"{ex.Message} | Original: {ex.InnerException.Message}"
+                                  : ex.Message;
+
+                _logger.LogInformation($"fullMessage == {fullMessage}");
+                _logger.LogInformation($"StackTrace == {ex.StackTrace}");
+
+                return StatusCode(500, fullMessage);
+            }
+        }
+
+        [HttpGet]
         [Route("get_order_details")]
         public IActionResult GetOrderDetails([FromQuery] long orderId)
         {

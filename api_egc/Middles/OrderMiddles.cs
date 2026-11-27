@@ -2,8 +2,6 @@
 using api_egc.Models.Uniforms.DTO;
 using Microsoft.Data.SqlClient;
 using System.Data;
-using System.Transactions;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace api_egc.Middles
 {
@@ -45,6 +43,46 @@ namespace api_egc.Middles
                 data.Add(order);
             }
             
+            return data;
+        }
+
+        public static List<OrderSummary> EXEC_SP_GET_ORDER_SUMMARY(string connectionString, long memberId,
+            int? FinancialState = 0, int? DeliveryState = 0)
+        {
+            List<OrderSummary> data = [];
+
+            using SqlConnection connection = new(connectionString);
+            connection.Open();
+
+            using SqlCommand cmd = new("SP_GET_ORDER_SUMMARY", connection);
+
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.Parameters.Add("@memberId", SqlDbType.BigInt).Value = memberId;
+            cmd.Parameters.Add("@FinancialState", SqlDbType.TinyInt).Value = FinancialState;
+            cmd.Parameters.Add("@DeliveryState", SqlDbType.TinyInt).Value = DeliveryState;
+
+            using SqlDataReader reader = cmd.ExecuteReader();
+
+            while (reader.Read())
+            {
+                OrderSummary order = new()
+                {
+                    Id = Utils.Utils.GetValue<int>(reader, "Id"),
+                    EstadoEntrega = Utils.Utils.GetValue<int>(reader, "EstadoEntrega"),
+                    EstadoFinanciero = Utils.Utils.GetValue<int>(reader, "EstadoFinanciero"),
+                    FechaCreacion = Utils.Utils.GetValue<DateTime>(reader, "FechaCreacion"),
+                    GranTotal = Utils.Utils.GetValue<decimal>(reader, "GranTotal"),
+                    IdIntegrante = Utils.Utils.GetValue<long>(reader, "IdIntegrante"),
+                    Implementos = Utils.Utils.GetValueNull<int>(reader, "Implementos"),
+                    MontoAbonado = Utils.Utils.GetValue<decimal>(reader, "MontoAbonado"),
+                    MontoPendiente = Utils.Utils.GetValue<decimal>(reader, "MontoPendiente"),
+                    NombreEstadoEntrega = Utils.Utils.GetValue<string>(reader, "NombreEstadoEntrega"),
+                    NombreEstadoFinanciero = Utils.Utils.GetValue<string>(reader, "NombreEstadoFinanciero")
+                };
+
+                data.Add(order);
+            }
+
             return data;
         }
 

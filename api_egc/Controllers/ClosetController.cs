@@ -65,6 +65,49 @@ namespace api_egc.Controllers
         }
 
         [HttpGet]
+        [Route("get_closet_dto")]
+        public IActionResult GetClosetDto([FromQuery] long squadId)
+        {
+            try
+            {
+                string connectionString = _configuration.GetConnectionString("DbEgcConnection")!;
+                long currentSquadId = 0;
+
+                if (squadId == 1 || squadId == 12 || squadId == 14 || squadId == 16)
+                {
+                    currentSquadId = 1;
+                }
+                else if (squadId == 2 || squadId == 13 || squadId == 15)
+                {
+                    currentSquadId = 2;
+                }
+                else
+                {
+                    currentSquadId = 6;
+                }
+
+                List<ClosetDTO> list = ClosetMiddles.EXEC_SP_GET_CLOSET_BY_SQUAD_DTO(connectionString, currentSquadId);
+
+                return Ok(new
+                {
+                    ok = true,
+                    list
+                });
+            }
+            catch (Exception ex)
+            {
+                var fullMessage = ex.InnerException != null
+                                  ? $"{ex.Message} | Original: {ex.InnerException.Message}"
+                                  : ex.Message;
+
+                _logger.LogInformation($"fullMessage == {fullMessage}");
+                _logger.LogInformation($"StackTrace == {ex.StackTrace}");
+
+                return StatusCode(500, fullMessage);
+            }
+        }
+
+        [HttpGet]
         [Route("get_closet_summary")]
         public IActionResult GetClosetSummary()
         {

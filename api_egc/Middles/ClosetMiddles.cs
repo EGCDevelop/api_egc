@@ -37,6 +37,37 @@ namespace api_egc.Middles
             return dataList;
         }
 
+        public static List<ClosetDTO> EXEC_SP_GET_CLOSET_BY_SQUAD_DTO(string connectionString, long squadId)
+        {
+            List<ClosetDTO> dataList = [];
+
+            using SqlConnection conn = new(connectionString);
+            conn.Open();
+
+            using SqlCommand cmd = new("SP_GET_CLOSET_BY_SQUAD_DTO", conn);
+
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.Parameters.Add("@squadId", SqlDbType.BigInt).Value = squadId;
+
+            using SqlDataReader reader = cmd.ExecuteReader();
+
+            while (reader.Read())
+            {
+                ClosetDTO closet = new()
+                {
+                    Id = Utils.Utils.GetValue<int>(reader, "Id"),
+                    UniformId = Utils.Utils.GetValue<int>(reader, "CLOUNIId"),
+                    SquadId = Utils.Utils.GetValue<int>(reader, "IdEscuadra"),
+                    Name = Utils.Utils.GetValue<string>(reader, "Nombre"),
+                    Price = Utils.Utils.GetValue<decimal>(reader, "Precio"),
+                };
+
+                dataList.Add(closet);
+            }
+
+            return dataList;
+        }
+
         public static void TransactionUniformsUpdated(string connectionString, List<Closet> closetSent)
         {
             using SqlConnection connection = new(connectionString);
